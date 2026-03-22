@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>PvP Simulator • KingSim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f1a">
+  <link rel="stylesheet" href="assets/fonts.css" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/theme-all.css" />
+  <link rel="stylesheet" href="assets/anim-all.css" />
+  <link rel="stylesheet" href="assets/mobile-all.css" />
+  <style>
+    body{background:var(--bg);color:var(--ink);}
+    .page-spacer{height:12px;}
+    .container{max-width:1180px;margin:24px auto;padding:0 16px;}
+    .panel{margin-bottom:16px;}
+    .h2{font-size:22px;font-weight:800;margin:0 0 8px;text-align:center;}
+    .h3{font-size:16px;font-weight:700;margin:0 0 10px;}
+    .muted{color:var(--muted);font-size:.87rem;}
+    .import-row{display:grid;gap:12px;grid-template-columns:1fr;}
+    @media(min-width:700px){.import-row.cols3{grid-template-columns:repeat(3,1fr);}}
+    .import-box{background:rgba(14,20,34,.7);border:1.5px dashed #2a4060;border-radius:12px;padding:14px;cursor:pointer;transition:border-color .15s;min-height:110px;display:flex;flex-direction:column;gap:8px;position:relative;}
+    .import-box:hover{border-color:#22d3ee;}
+    .import-box.has-data{border-style:solid;border-color:#10b981;}
+    .import-box.error{border-color:#ef4444;}
+    .import-box-label{font-size:.78rem;font-weight:700;color:#7dd3fc;letter-spacing:.04em;text-transform:uppercase;}
+    .import-box-hint{font-size:.78rem;color:var(--muted);}
+    .import-btn{background:linear-gradient(90deg,#22d3ee,#60a5fa);color:#05121f;border:0;font-weight:600;padding:8px 14px;border-radius:10px;font-size:.82rem;cursor:pointer;align-self:flex-start;min-height:44px;display:inline-flex;align-items:center;gap:6px;}
+    .import-status{font-size:.78rem;min-height:18px;}
+    .import-status.ok{color:#10b981;}
+    .import-status.err{color:#ef4444;}
+    .retry-btn{font-size:.75rem;color:#60a5fa;cursor:pointer;margin-left:6px;background:none;border:none;padding:0;}
+    .run-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px;}
+    .btn-run{background:linear-gradient(90deg,#22d3ee,#60a5fa);color:#05121f;border:0;font-weight:700;padding:11px 28px;border-radius:12px;font-size:1rem;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 18px rgba(34,211,238,.25);}
+    .btn-run:disabled{opacity:.5;cursor:not-allowed;}
+    .result-best{padding:14px 16px;background:rgba(16,185,129,.08);border:1px solid #10b981;border-radius:10px;margin-bottom:12px;}
+    .result-best-label{font-size:.8rem;color:#10b981;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+    .result-best-value{font-size:1.4rem;font-weight:800;color:#e9eef7;margin:4px 0;}
+    .result-best-sub{font-size:.82rem;color:var(--muted);}
+    .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    .table-scroll table{min-width:520px;width:100%;border-collapse:collapse;}
+    .table-scroll th,.table-scroll td{padding:9px 12px;border-bottom:1px solid rgba(35,54,77,.6);font-size:13px;white-space:nowrap;color:var(--ink);}
+    .table-scroll th{font-size:12px;font-weight:700;color:#7dd3fc;text-transform:uppercase;letter-spacing:.04em;text-align:left;}
+    .stats-grid{display:grid;gap:12px;grid-template-columns:1fr;}
+    @media(min-width:700px){.stats-grid{grid-template-columns:1fr 1fr;}}
+    .stat-type-block{background:rgba(10,14,24,.45);border:1px solid #1c2d40;border-radius:10px;padding:12px;}
+    .stat-type-title{font-size:.78rem;font-weight:700;color:#7dd3fc;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+    .stat-row label{font-size:.68rem;color:var(--muted);display:block;margin-bottom:2px;}
+    .stat-row input{width:100%;padding:4px 6px;font-size:.78rem;background:rgba(255,255,255,.04);border:1px solid #1e3048;border-radius:6px;color:var(--ink);}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:#22d3ee;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;}
+    .engine-note{font-size:.75rem;color:#6b7fa3;font-style:italic;margin-top:6px;}
+    /* Example image thumbnails inside import boxes */
+    .example-thumb{width:56px;height:40px;object-fit:cover;border-radius:6px;opacity:.6;border:1px solid #2a4060;transition:opacity .15s,border-color .15s;cursor:pointer;flex-shrink:0;}
+    .example-thumb:hover{opacity:1;border-color:#22d3ee;}
+    .import-box-row{display:flex;align-items:flex-start;gap:10px;}
+    .import-box-content{flex:1;display:flex;flex-direction:column;gap:6px;}
+    /* Image lightbox */
+    .img-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;cursor:pointer;}
+    .img-modal.open{display:flex;}
+    .img-modal img{max-width:92vw;max-height:92vh;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
+    /* Table text wrapping for mobile */
+    .pvp-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    .pvp-import-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    @media(max-width:650px){.pvp-import-grid{grid-template-columns:1fr;}}
+    .pvp-import-inner-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    @media(max-width:400px){.pvp-import-inner-grid{grid-template-columns:1fr;}}
+    .pvp-table-wrap table{min-width:380px;width:100%;border-collapse:collapse;}
+    .pvp-table-wrap td:nth-child(2){white-space:nowrap;}
+    /* Manual input side-by-side panels */
+    .manual-panels{display:grid;gap:16px;grid-template-columns:1fr;}
+    @media(min-width:800px){.manual-panels{grid-template-columns:1fr 1fr;}}
+    .manual-panel-header{font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;border-radius:8px 8px 0 0;margin:-12px -12px 12px;color:#fff;}
+    .att-header{background:linear-gradient(90deg,rgba(239,68,68,.25),rgba(239,68,68,.08));}
+    .def-header{background:linear-gradient(90deg,rgba(16,185,129,.2),rgba(16,185,129,.06));}
+    .troops-row{display:grid;gap:6px;grid-template-columns:1fr 1fr;margin-bottom:10px;}
+    @media(min-width:500px){.troops-row{grid-template-columns:1fr 1fr 1fr;}}
+    .troops-total-row{display:grid;gap:6px;grid-template-columns:1fr 1fr;margin-bottom:10px;}
+    .stat-type-block-compact{background:rgba(10,14,24,.45);border:1px solid #1c2d40;border-radius:8px;padding:10px;margin-bottom:8px;}
+    .stat-row-compact{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;}
+    @media(min-width:500px){.stat-row-compact{grid-template-columns:repeat(4,1fr);}}
+    .stat-row-compact label{font-size:.65rem;color:var(--muted);display:block;margin-bottom:2px;}
+    .stat-row-compact input{width:100%;padding:4px 6px;font-size:.76rem;background:rgba(255,255,255,.04);border:1px solid #1e3048;border-radius:5px;color:var(--ink);}
+  
+    /* v2 PvP upgrades */
+    /* WIN/LOSS row highlights */
+    tr.row-win td  { background: rgba(16,185,129,.06) !important; }
+    tr.row-loss td { background: rgba(239,68,68,.04) !important; }
+
+    /* ATT panel subtle glow */
+    .manual-panel-header.att-header {
+      box-shadow: inset 0 0 20px rgba(248,113,113,.08) !important;
+    }
+    /* DEF panel subtle glow */
+    .manual-panel-header.def-header {
+      box-shadow: inset 0 0 20px rgba(52,211,153,.08) !important;
+    }
+
+  
+    /* FIX 6: PvP score table fits all screens */
+    @media (max-width: 640px) {
+      .pvp-table-wrap table {
+        table-layout: fixed !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        font-size: 11px !important;
+      }
+      .pvp-table-wrap th, .pvp-table-wrap td {
+        padding: 5px 6px !important;
+        font-size: 11px !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+      }
+    }
+
+  </style>
+  <!-- PvP recalibration CSS (mirrors Mystic styling) -->
+  <style>
+    /* Recalibration panel */
+    .pvp-recal-panel{margin-top:14px}
+    .pvp-recal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+    @media(max-width:600px){.pvp-recal-grid{grid-template-columns:1fr}}
+    .pvp-best-card{background:rgba(34,211,238,.07);border:1px solid #22d3ee;border-radius:10px;padding:14px}
+    .pvp-best-card.green{background:rgba(16,185,129,.08);border-color:#10b981}
+    .pvp-card-label{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px;color:#22d3ee}
+    .pvp-card-label.green{color:#10b981}
+    .pvp-card-formation{font-size:1.5rem;font-weight:800;color:#e9eef7;margin:2px 0 4px}
+    .pvp-card-sub{font-size:.78rem;color:var(--muted);white-space:pre-line}
+    .pvp-outcome-row{display:flex;gap:10px;align-items:center;margin:10px 0 0;flex-wrap:wrap}
+    .pvp-btn-win{background:linear-gradient(90deg,#10b981,#059669);color:#fff;border:0;font-weight:700;padding:9px 22px;border-radius:10px;font-size:.9rem;cursor:pointer;min-height:40px;transition:filter .15s}
+    .pvp-btn-win:hover{filter:brightness(1.1)}
+    .pvp-btn-lost{background:linear-gradient(90deg,#ef4444,#dc2626);color:#fff;border:0;font-weight:700;padding:9px 22px;border-radius:10px;font-size:.9rem;cursor:pointer;min-height:40px;transition:filter .15s}
+    .pvp-btn-lost:hover{filter:brightness(1.1)}
+    .pvp-attempt-track{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .pvp-attempt-row{background:rgba(255,255,255,.03);border:1px solid #1c2d40;border-radius:8px;padding:10px 12px;box-sizing:border-box;max-width:100%;overflow:hidden;margin-bottom:8px}
+    .pvp-attempt-row.lost{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.03)}
+    .pvp-attempt-label{font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:6px}
+    .pvp-injured-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+    .pvp-injured-label{font-size:.72rem;color:var(--muted);white-space:nowrap}
+    .pvp-injured-input{width:120px;max-width:40%;padding:5px 8px;font-size:.82rem;background:rgba(255,255,255,.04);border:1px solid #1e3048;border-radius:6px;color:var(--ink);box-sizing:border-box}
+    .pvp-apply-btn{padding:5px 14px;font-size:.78rem;font-weight:700;background:rgba(34,211,238,.15);border:1px solid #22d3ee;color:#22d3ee;border-radius:6px;cursor:pointer;min-height:32px}
+    .pvp-apply-btn:hover{background:rgba(34,211,238,.28)}
+    #pvp_history_wrap{max-width:100%;overflow:hidden}
+    #pvp_history_wrap > div{max-width:100%;overflow:hidden;box-sizing:border-box}
+    #pvp_attempt_track{max-width:100%}
+    .pvp-attempt-status{font-size:.75rem;color:var(--muted);margin-top:4px}
+    .pvp-shift-badge{display:inline-block;padding:2px 8px;font-size:.68rem;font-weight:700;border-radius:20px;background:rgba(34,211,238,.12);color:#22d3ee;border:1px solid rgba(34,211,238,.3)}
+    .pvp-recal-btn-clear{padding:6px 14px;font-size:.78rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid #2a3850;color:var(--muted);border-radius:8px;cursor:pointer;margin-top:12px}
+    .pvp-recal-btn-clear:hover{border-color:#ef4444;color:#ef4444}
+    #pvp-fw-canvas{position:fixed;inset:0;pointer-events:none;z-index:9998;display:none}
+  </style>
+  <canvas id="pvp-fw-canvas"></canvas>
+  <!-- Image lightbox modal -->
+  <div class="img-modal" id="img_modal" onclick="this.classList.remove('open')">
+    <img id="img_modal_img" src="" alt="Example" />
+  </div>
+</head>
+<body>
+  <div class="nav"><div class="nav-inner">
+    <a class="brand" href="index.html"><span class="brand-badge"></span>KingSim</a>
+    <div class="nav-links">
+      <a href="index.html" data-tab="home">Home</a>
+      <a href="troops.html" data-tab="troops">Troops &amp; Stats</a>
+      <a href="heros.html" data-tab="heroes">Heroes</a>
+      <a href="magic.html" data-tab="magic">Bear Magic</a>
+      <a href="optiona.html" data-tab="optiona">Bear Option-A</a>
+      <a href="mystic.html" data-tab="mystic">Mystic Trials</a>
+      <a href="pvp.html" data-tab="pvp">PvP</a>
+</div>
+    <div class="nav-ctas"><a class="btn-primary--compact" href="troops.html">🪖</a><a class="btn-primary--compact" href="heros.html" style="background:linear-gradient(90deg,#0d9488,#1e90b0)">🧙</a></div>
+  </div></div>
+  <div class="page-spacer"></div>
+
+  <div class="container">
+    <!-- Page Info Banner -->
+    <div class="info-banner" style="background:linear-gradient(135deg,rgba(14,20,34,.7),rgba(9,14,26,.6));border:1px solid #f59e0b33;border-left:3px solid #f59e0b;">
+      <div class="info-banner-header">
+        <span class="info-banner-emoji">⚔</span>
+        <span class="info-banner-title">PvP Simulator — Attack Planning Tool</span>
+        <div class="info-banner-toggle">
+          <span class="info-banner-arrows">&#8963;<br>&#8964;</span>
+        </div>
+      </div>
+      <div class="info-banner-body">
+        <p>Plan the best troop formation to attack a real player's garrison. Two import paths: one battle report screenshot if you've already fought, or scout imports (troop ratio + defender stats + your own stats) if planning ahead.</p>
+        <div class="info-tip"><strong style="color:#f59e0b">Solo march?</strong> Attack any Beast and screenshot the Stat Bonuses. &nbsp;|&nbsp; <strong style="color:#f59e0b">Rally march?</strong> Call a Rally on a Terror to activate squad bonus stats, then enter your Rally Size. The engine ranks every formation — winners first, fewest own losses.</div>
+      </div>
+    </div>
+    <section class="panel panel-glass">
+      <h2 class="h2">⚔ PvP Attack Simulator 🏰</h2>
+      <p class="muted" style="text-align:center;margin:0 0 16px">Used for PvP battles and CB / Turret attacks — import data to find the best formation.</p>
+
+      <h2 class="h2" style="margin-bottom:10px">Attacker &amp; Defender Report Import</h3>
+      <!-- outer 2-col: left=Attacker&Defender combined, right=Defender-only -->
+      <div class="pvp-import-grid" style="margin-bottom:16px">
+
+        <!-- ── outer-left: Attacker/Defender combined report ── -->
+        <div style="border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:10px;background:rgba(239,68,68,.04)">
+          <div style="font-size:.95rem;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">IMPORT AFTER BATTLE</div>
+          <div style="font-size:.65rem;font-weight:700;color:#f87171;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">⚔ Attacker / Defender</div>
+          <div class="import-box" id="att_box" onclick="document.getElementById('att_file').click()" style="border-color:rgba(239,68,68,.35)">
+            <div class="import-box-row">
+              <img src="assets/example_att_def.jpg" class="example-thumb" title="Example image" onclick="event.stopPropagation();showExample('assets/example_att_def.jpg')" alt="example" />
+              <div class="import-box-content">
+                <div class="import-box-label" style="color:#f87171">Attacker &amp; Defender Stats/Troops</div>
+                <div class="import-box-hint">Battle Bonus Details — fills both sides at once</div>
+              </div>
+            </div>
+            <input type="file" id="att_file" accept="image/*" style="display:none" />
+            <div class="import-status" id="att_status"></div>
+          </div>
+        </div>
+
+        <!-- ── outer-right: Defender-only + Attacker standalone ── -->
+        <div style="border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:10px;background:rgba(16,185,129,.03)">
+          <div style="font-size:.95rem;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">IMPORT AFTER SCOUT</div>
+          <div style="font-size:.65rem;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🛡 Defender Data</div>
+          <div class="pvp-import-inner-grid" style="margin-bottom:8px">
+            <!-- Def Troop Ratio -->
+            <div class="import-box" id="def_ratio_box" onclick="document.getElementById('def_ratio_file').click()" style="border-color:rgba(16,185,129,.3)">
+              <div class="import-box-row">
+                <img src="assets/example_def_troops.jpg" class="example-thumb" title="Example" onclick="event.stopPropagation();showExample('assets/example_def_troops.jpg')" alt="example" />
+                <div class="import-box-content">
+                  <div class="import-box-label" style="color:#34d399">Defender Troops</div>
+                  <div class="import-box-hint">Troops Total + Troop Type %</div>
+                </div>
+              </div>
+              <input type="file" id="def_ratio_file" accept="image/*" style="display:none" />
+              <div class="import-status" id="def_ratio_status"></div>
+            </div>
+            <!-- Def Stat Bonuses -->
+            <div class="import-box" id="def_stats_box" onclick="document.getElementById('def_stats_file').click()" style="border-color:rgba(16,185,129,.3)">
+              <div class="import-box-row">
+                <img src="assets/example_def_stats.jpg" class="example-thumb" title="Example" onclick="event.stopPropagation();showExample('assets/example_def_stats.jpg')" alt="example" />
+                <div class="import-box-content">
+                  <div class="import-box-label" style="color:#34d399">Defender Stats</div>
+                  <div class="import-box-hint">Def Stat Bonuses block</div>
+                </div>
+              </div>
+              <input type="file" id="def_stats_file" accept="image/*" style="display:none" />
+              <div class="import-status" id="def_stats_status"></div>
+            </div>
+          </div>
+          <!-- Attacker Stats/Troops (inside Defender panel, red label to show it updates ATT) -->
+          <div class="import-box" id="att_extra_box" onclick="document.getElementById('att_extra_file').click()" style="border-color:rgba(239,68,68,.25)">
+            <div class="import-box-row">
+              <img src="assets/example_att_stats.jpg" class="example-thumb" title="Example" onclick="event.stopPropagation();showExample('assets/example_att_stats.jpg')" alt="example" />
+              <div class="import-box-content">
+                <div class="import-box-label" style="color:#f87171">Attacker Stats / Troops</div>
+                <div class="import-box-hint">Left side only — your stats &amp; troop amounts</div>
+              </div>
+            </div>
+            <input type="file" id="att_extra_file" accept="image/*" style="display:none" />
+            <div class="import-status" id="att_extra_status"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:20px">
+        <div class="run-row">
+          <button class="btn-run" id="pvp_run_btn">&#9654; Run Simulation</button>
+          <span class="muted" id="pvp_run_status">Ready — import data or enter manually below</span>
+        </div>
+        <p class="engine-note">Rankings are reliable. Counter-priority targeting: Inf→Cav, Cav→Arc, Arc→Inf. Absolute estimates ±15-25%.</p>
+
+        <!-- Rally Joiner Setup -->
+        <div style="margin-top:12px">
+          <button class="btn-run" id="pvp_rally_btn" type="button" style="background:linear-gradient(90deg,#a78bfa,#60a5fa);font-size:.9rem;padding:9px 22px;" disabled>🏰 Rally</button>
+          <span class="muted" id="pvp_rally_hint" style="font-size:.78rem;margin-left:8px">Run simulation first to unlock</span>
+        </div>
+
+        <!-- Rally Planner (hidden until button clicked) -->
+        <div id="pvp_rally_panel" style="display:none;margin-top:14px;background:rgba(14,20,34,.7);border:1px solid #3b2d6b;border-left:3px solid #a78bfa;border-radius:12px;padding:16px;">
+          <div style="font-size:.75rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">🏰 Rally Planner</div>
+          <div style="font-size:.78rem;color:#a9b3c6;margin-bottom:12px">How many rallies will you launch on this defender?</div>
+          <div style="display:flex;gap:8px;margin-bottom:14px" id="pvp_rally_strike_btns">
+            <button type="button" class="pvp-strike-btn" data-strikes="1" style="background:#1a2c44;color:#a78bfa;border:2px solid #3b2d6b;font-weight:700;padding:10px 20px;border-radius:10px;font-size:1rem;cursor:pointer;min-width:52px;">1</button>
+            <button type="button" class="pvp-strike-btn" data-strikes="2" style="background:#1a2c44;color:#a78bfa;border:2px solid #3b2d6b;font-weight:700;padding:10px 20px;border-radius:10px;font-size:1rem;cursor:pointer;min-width:52px;">2</button>
+            <button type="button" class="pvp-strike-btn" data-strikes="3" style="background:#1a2c44;color:#a78bfa;border:2px solid #3b2d6b;font-weight:700;padding:10px 20px;border-radius:10px;font-size:1rem;cursor:pointer;min-width:52px;">3</button>
+          </div>
+          <!-- Strike formation cards rendered here -->
+          <div id="pvp_rally_strikes"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-glass" id="pvp_results" style="display:none">
+      <!-- Hidden data holders (still populated by JS, but not shown to user) -->
+      <div id="pvp_best_card" style="display:none">
+        <div class="result-best-value" id="pvp_best_val">—</div>
+        <div class="result-best-sub" id="pvp_best_sub"></div>
+      </div>
+      <div id="pvp_table_wrap" style="display:none"></div>
+      <div style="display:none"><span id="pvp_count"></span></div>
+
+      <!-- ══ PVP RECALIBRATION PANEL (main visible UI) ══ -->
+      <div class="pvp-recal-panel" id="pvp_recal_panel" style="display:none">
+        <div style="font-size:.72rem;font-weight:700;color:#7dd3fc;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;border-top:1px solid #1c2d40;padding-top:12px;margin-top:4px">
+          ⚔ Battle Follow-up &amp; Recalibration
+        </div>
+        <!-- Dynamic history cards — injected by JS into #pvp_history_wrap -->
+        <div id="pvp_history_wrap" style="margin-bottom:10px"></div>
+        <!-- Outcome buttons -->
+        <div class="pvp-outcome-row" id="pvp_outcome_row" style="display:none">
+          <span style="font-size:.78rem;color:var(--muted)">How did the battle go?</span>
+          <div style="display:flex;gap:10px">
+            <button class="pvp-btn-win"  id="pvp_btn_win">🏆 Win!</button>
+            <button class="pvp-btn-lost" id="pvp_btn_lost">💀 Lost</button>
+          </div>
+        </div>
+        <!-- Attempt rows — injected dynamically -->
+        <div class="pvp-attempt-track" id="pvp_attempt_track"></div>
+        <button class="pvp-recal-btn-clear" id="pvp_btn_clear">✕ Clear session &amp; start over</button>
+      </div>
+    </section>
+
+    <section class="panel panel-glass">
+      <h3 class="h3">Manual Input / Review OCR</h3>
+      <div class="manual-panels">
+
+        <!-- ── ATTACKER column ── -->
+        <div class="stat-type-block" style="padding:12px">
+          <div class="manual-panel-header att-header">⚔ Attacker</div>
+          <div class="troops-total-row">
+            <div><label>Total Troops</label><input type="number" id="pvp_att_total" step="1000" value="150000" style="width:100%"/></div>
+            <div><label>Tier</label>
+              <select id="pvp_att_tier" style="width:100%">
+                <option>T6</option><option>T9</option><option selected>T10</option>
+                <option>T10.TG1</option><option>T10.TG2</option><option>T10.TG3</option>
+                <option>T10.TG4</option><option>T10.TG5</option>
+              </select>
+            </div>
+          </div>
+          <div class="troops-row">
+            <div><label>Inf Troops</label><input type="number" id="pvp_att_inf" step="1000" value="0" style="width:100%"/></div>
+            <div><label>Cav Troops</label><input type="number" id="pvp_att_cav" step="1000" value="0" style="width:100%"/></div>
+            <div><label>Arc Troops</label><input type="number" id="pvp_att_arc" step="1000" value="0" style="width:100%"/></div>
+          </div>
+          <div class="stat-type-block-compact"><div class="stat-type-title" style="color:#ef4444;font-size:.7rem">Infantry</div>
+            <div class="stat-row-compact">
+              <div><label>Attack%</label><input type="number" id="pvp_att_inf_atk" step="0.1" value="100"></div>
+              <div><label>Defense%</label><input type="number" id="pvp_att_inf_def" step="0.1" value="100"></div>
+              <div><label>Lethality%</label><input type="number" id="pvp_att_inf_let" step="0.1" value="100"></div>
+              <div><label>Health%</label><input type="number" id="pvp_att_inf_hp" step="0.1" value="100"></div>
+            </div></div>
+          <div class="stat-type-block-compact"><div class="stat-type-title" style="color:#ef4444;font-size:.7rem">Cavalry</div>
+            <div class="stat-row-compact">
+              <div><label>Attack%</label><input type="number" id="pvp_att_cav_atk" step="0.1" value="100"></div>
+              <div><label>Defense%</label><input type="number" id="pvp_att_cav_def" step="0.1" value="100"></div>
+              <div><label>Lethality%</label><input type="number" id="pvp_att_cav_let" step="0.1" value="100"></div>
+              <div><label>Health%</label><input type="number" id="pvp_att_cav_hp" step="0.1" value="100"></div>
+            </div></div>
+          <div class="stat-type-block-compact"><div class="stat-type-title" style="color:#ef4444;font-size:.7rem">Archers</div>
+            <div class="stat-row-compact">
+              <div><label>Attack%</label><input type="number" id="pvp_att_arc_atk" step="0.1" value="100"></div>
+              <div><label>Defense%</label><input type="number" id="pvp_att_arc_def" step="0.1" value="100"></div>
+              <div><label>Lethality%</label><input type="number" id="pvp_att_arc_let" step="0.1" value="100"></div>
+              <div><label>Health%</label><input type="number" id="pvp_att_arc_hp" step="0.1" value="100"></div>
+            </div></div>
+        </div>
+
+        <!-- ── DEFENDER column ── -->
+        <div class="stat-type-block" style="padding:12px">
+          <div class="manual-panel-header def-header">🛡 Defender (Fixed from import)</div>
+          <div class="troops-total-row">
+            <div><label>Total Troops</label><input type="number" id="pvp_def_total" step="1000" value="150000" style="width:100%"/></div>
+            <div><label>Tier</label>
+              <select id="pvp_def_tier" style="width:100%">
+                <option>T6</option><option>T9</option><option selected>T10</option>
+                <option>T10.TG1</option><option>T10.TG2</option><option>T10.TG3</option>
+                <option>T10.TG4</option><option>T10.TG5</option>
+              </select>
+            </div>
+          </div>
+          <div class="troops-row">
+            <div><label>Inf Troops</label><input type="number" id="pvp_def_inf" step="1000" value="0" style="width:100%"/></div>
+            <div><label>Cav Troops</label><input type="number" id="pvp_def_cav" step="1000" value="0" style="width:100%"/></div>
+            <div><label>Arc Troops</label><input type="number" id="pvp_def_arc" step="1000" value="0" style="width:100%"/></div>
+          </div>
+          <div class="stat-type-block-compact"><div class="stat-type-title" style="color:#10b981;font-size:.7rem">Infantry</div>
+            <div class="stat-row-compact">
+              <div><label>Attack%</label><input type="number" id="pvp_def_inf_atk" step="0.1" value="100"></div>
+              <div><label>Defense%</label><input type="number" id="pvp_def_inf_def" step="0.1" value="100"></div>
+              <div><label>Lethality%</label><input type="number" id="pvp_def_inf_let" step="0.1" value="100"></div>
+              <div><label>Health%</label><input type="number" id="pvp_def_inf_hp" step="0.1" value="100"></div>
+            </div></div>
+          <div class="stat-type-block-compact"><div class="stat-type-title" style="color:#10b981;font-size:.7rem">Cavalry</div>
+            <div class="stat-row-compact">
+              <div><label>Attack%</label><input type="number" id="pvp_def_cav_atk" step="0.1" value="100"></div>
+              <div><label>Defense%</label><input type="number" id="pvp_def_cav_def" step="0.1" value="100"></div>
+              <div><label>Lethality%</label><input type="number" id="pvp_def_cav_let" step="0.1" value="100"></div>
+              <div><label>Health%</label><input type="number" id="pvp_def_cav_hp" step="0.1" value="100"></div>
+            </div></div>
+          <div class="stat-type-block-compact"><div class="stat-type-title" style="color:#10b981;font-size:.7rem">Archers</div>
+            <div class="stat-row-compact">
+              <div><label>Attack%</label><input type="number" id="pvp_def_arc_atk" step="0.1" value="100"></div>
+              <div><label>Defense%</label><input type="number" id="pvp_def_arc_def" step="0.1" value="100"></div>
+              <div><label>Lethality%</label><input type="number" id="pvp_def_arc_let" step="0.1" value="100"></div>
+              <div><label>Health%</label><input type="number" id="pvp_def_arc_hp" step="0.1" value="100"></div>
+            </div></div>
+        </div><!-- end def panel -->
+
+      </div><!-- end manual-panels -->
+    </section>
+  </div>
+
+  <script src="assets/footer.js"></script>
+  <script src="assets/theme-all.js"></script>
+  <script src="assets/anim-all.js"></script>
+  <script src="assets/mobile-all.js"></script>
+  <script src="sim/engine/battleCore.js"></script>
+  <script src="sim/engine/pvpOptimizer.js"></script>
+  <script src="sim/ocr/pvp_ocr.js"></script>
+  <script>
+  (function(){
+    'use strict';
+    const $=id=>document.getElementById(id);
+    const num=(id,def=0)=>{const v=parseFloat(String($(`${id}`)?.value||'').replace(',','.'));return isFinite(v)?v:def;};
+    function setBox(boxId,statusId,ok,msg){const box=$(boxId),status=$(statusId);if(!box||!status)return;box.classList.toggle('has-data',ok);box.classList.toggle('error',!ok);status.className='import-status '+(ok?'ok':'err');status.textContent=msg;}
+    function wireImport(fileId,boxId,statusId,handler){const fileEl=$(fileId);if(!fileEl)return;fileEl.addEventListener('change',async(e)=>{const file=e.target.files[0];if(!file)return;$(statusId).textContent='Reading...';$(statusId).className='import-status';try{await handler(file);}catch(err){setBox(boxId,statusId,false,'OCR failed — '+(err.message||err));const rb=document.createElement('button');rb.className='retry-btn';rb.textContent='[retry]';rb.onclick=()=>{fileEl.value='';fileEl.click();};$(statusId).appendChild(rb);}fileEl.value='';});}
+    function fillStats(prefix,stats){['inf','cav','arc'].forEach(t=>['atk','def','let','hp'].forEach(s=>{const el=$(`${prefix}_${t}_${s}`);if(el&&stats[t]&&stats[t][s]!=null&&stats[t][s]!==0)el.value=stats[t][s];}));}
+
+    wireImport('att_file','att_box','att_status',async(file)=>{
+      const ocr=window.KingSim&&window.KingSim.pvpOcr;
+      if(!ocr)throw new Error('pvp_ocr.js not loaded');
+      const res=await ocr.parseBattleReport(file);
+      // Fill attacker side
+      if(res.attacker&&res.attacker.troops){
+        const t=res.attacker.troops;
+        const el_inf=$('pvp_att_inf'),el_cav=$('pvp_att_cav'),el_arc=$('pvp_att_arc');
+        if(el_inf)el_inf.value=t.inf||0;
+        if(el_cav)el_cav.value=t.cav||0;
+        if(el_arc)el_arc.value=t.arc||0;
+        $('pvp_att_total').value=(t.inf||0)+(t.cav||0)+(t.arc||0);
+      }
+      if(res.attacker&&res.attacker.stats)fillStats('pvp_att',res.attacker.stats);
+      // Also fill defender side if present
+      if(res.defender&&res.defender.troops){
+        const t=res.defender.troops;
+        $('pvp_def_inf').value=t.inf||0;$('pvp_def_cav').value=t.cav||0;$('pvp_def_arc').value=t.arc||0;
+        $('pvp_def_total').value=(t.inf||0)+(t.cav||0)+(t.arc||0);
+      }
+      if(res.defender&&res.defender.stats)fillStats('pvp_def',res.defender.stats);
+      // Auto-fill tier dropdowns from TG badge detection
+      if(res.attacker&&res.attacker.tier){const te=$('pvp_att_tier');if(te)te.value=res.attacker.tier;}
+      if(res.defender&&res.defender.tier){const te=$('pvp_def_tier');if(te)te.value=res.defender.tier;}
+      const attTotal=(res.attacker&&res.attacker.troops)?((res.attacker.troops.inf||0)+(res.attacker.troops.cav||0)+(res.attacker.troops.arc||0)):0;
+      const defTotal=(res.defender&&res.defender.troops)?((res.defender.troops.inf||0)+(res.defender.troops.cav||0)+(res.defender.troops.arc||0)):0;
+      const attSC=res.attacker&&res.attacker.stats?Object.values(res.attacker.stats).reduce((a,v)=>a+Object.values(v).filter(x=>x!==0).length,0):0;
+      const defSC=res.defender&&res.defender.stats?Object.values(res.defender.stats).reduce((a,v)=>a+Object.values(v).filter(x=>x!==0).length,0):0;
+      const tgStr=(res.tgLevels&&(res.tgLevels.att||res.tgLevels.def))?' | Att:'+((res.attacker&&res.attacker.tier)||'T10')+' Def:'+((res.defender&&res.defender.tier)||'T10'):'';
+      setBox('att_box','att_status',true,'Att: '+attTotal.toLocaleString()+' ('+attSC+'/12 stats) | Def: '+defTotal.toLocaleString()+' ('+defSC+'/12 stats)'+tgStr);
+    });
+    wireImport('def_ratio_file','def_ratio_box','def_ratio_status',async(file)=>{const ocr=window.KingSim&&window.KingSim.pvpOcr;if(!ocr)throw new Error('pvp_ocr.js not loaded');const res=await ocr.parseDefTroopRatio(file);if(res.troops){$('pvp_def_inf').value=res.troops.inf||0;$('pvp_def_cav').value=res.troops.cav||0;$('pvp_def_arc').value=res.troops.arc||0;$('pvp_def_total').value=res.total||(res.troops.inf||0)+(res.troops.cav||0)+(res.troops.arc||0);setBox('def_ratio_box','def_ratio_status',true,'Def troops: '+(res.total||0).toLocaleString()+' total');}else{setBox('def_ratio_box','def_ratio_status',false,'Could not read ratio — enter manually');}});
+    wireImport('def_stats_file','def_stats_box','def_stats_status',async(file)=>{const ocr=window.KingSim&&window.KingSim.pvpOcr;if(!ocr)throw new Error('pvp_ocr.js not loaded');const res=await ocr.parseDefStatBonuses(file);if(res.stats)fillStats('pvp_def',res.stats);setBox('def_stats_box','def_stats_status',true,'Defender stats imported');});
+    wireImport('att_extra_file','att_extra_box','att_extra_status',async(file)=>{
+      const ocr=window.KingSim&&window.KingSim.pvpOcr;
+      if(!ocr)throw new Error('pvp_ocr.js not loaded');
+      const res=await ocr.parseAttackerStatsTroops(file);
+      if(res.troops){
+        const el_inf=$('pvp_att_inf'),el_cav=$('pvp_att_cav'),el_arc=$('pvp_att_arc');
+        if(el_inf)el_inf.value=res.troops.inf||0;
+        if(el_cav)el_cav.value=res.troops.cav||0;
+        if(el_arc)el_arc.value=res.troops.arc||0;
+        $('pvp_att_total').value=(res.troops.inf||0)+(res.troops.cav||0)+(res.troops.arc||0);
+      }
+      if(res.stats)fillStats('pvp_att',res.stats);
+      if(res.tier){const te=$('pvp_att_tier');if(te)te.value=res.tier;}
+      const tgMsg=res.tier&&res.tier.includes('TG')?' ('+res.tier+')':'';
+      setBox('att_extra_box','att_extra_status',true,'Attacker stats imported'+tgMsg);
+    });
+
+    function readStats(p){return{attack:{inf:num(`${p}_inf_atk`,0),cav:num(`${p}_cav_atk`,0),arc:num(`${p}_arc_atk`,0)},defense:{inf:num(`${p}_inf_def`,0),cav:num(`${p}_cav_def`,0),arc:num(`${p}_arc_def`,0)},lethality:{inf:num(`${p}_inf_let`,0),cav:num(`${p}_cav_let`,0),arc:num(`${p}_arc_let`,0)},health:{inf:num(`${p}_inf_hp`,0),cav:num(`${p}_cav_hp`,0),arc:num(`${p}_arc_hp`,0)}};}
+
+    $('pvp_run_btn').addEventListener('click',async()=>{
+      const btn=$('pvp_run_btn'),status=$('pvp_run_status');
+      btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Running...';status.textContent='';
+      try{
+        const opt=window.KingSim&&window.KingSim.pvpOptimizer;
+        if(!opt)throw new Error('pvpOptimizer not loaded');
+        const defInf=num('pvp_def_inf',0),defCav=num('pvp_def_cav',0),defArc=num('pvp_def_arc',0);
+        const defTotal=defInf+defCav+defArc;
+        if(defTotal===0)throw new Error('Defender troops are 0. Import or enter defender troop counts.');
+        const _ai=num('pvp_att_inf',0),_ac=num('pvp_att_cav',0),_aa=num('pvp_att_arc',0);
+        const _perType=_ai+_ac+_aa;
+        const attTotal=_perType>0?_perType:(num('pvp_att_total',0)||150000);
+        await new Promise(r=>setTimeout(r,20));
+        const out=opt.scanPvP({attackerTotal:attTotal,attackerStats:readStats('pvp_att'),attackerTier:$('pvp_att_tier').value,defenderTroops:{inf:defInf,cav:defCav,arc:defArc},defenderStats:readStats('pvp_def'),defenderTier:$('pvp_def_tier').value,sparsity:.01,maxTop:10});
+        const best=out.best;if(!best)throw new Error('No results');
+        const fi=best.fi,fc=best.fc;
+        const inf=Math.round(fi*attTotal),cav=Math.round(fc*attTotal),arc=Math.max(0,attTotal-inf-cav);
+        $('pvp_best_val').textContent=best.label;
+        $('pvp_best_sub').innerHTML='Infantry: <strong>'+inf.toLocaleString()+'</strong> | Cavalry: <strong>'+cav.toLocaleString()+'</strong> | Archers: <strong>'+arc.toLocaleString()+'</strong><br>Est. defender injuries: <strong>'+best.defenderInjured.toLocaleString()+'</strong>';
+        const tableWrap=$('pvp_table_wrap');
+        const rows=(out.top10||[]).map((r,i)=>{
+          const dI=(r.defenderInjured||0).toLocaleString();
+          const aI=(r.attackerInjured||0).toLocaleString();
+          const win=r.winner==='attacker';
+          const wCell=win?'<span style="color:#10b981;font-weight:700">WIN</span>':'<span style="color:#ef4444">LOSS</span>';
+          const style=win?'color:var(--ink)':'color:var(--ink);opacity:0.75';
+          return `<tr style="${style}"><td style="padding:6px 8px;font-size:12px">${r.rank||i+1}</td><td style="font-weight:600;padding:6px 8px;font-size:12px;word-break:break-word">${r.label||'—'}</td><td style="padding:6px 8px;font-size:11px;text-align:right;white-space:nowrap">${dI}</td><td style="padding:6px 8px;font-size:11px;text-align:right;white-space:nowrap">${aI}</td><td style="padding:6px 8px;text-align:center">${wCell}</td></tr>`;
+        }).join('');
+        tableWrap.innerHTML=`<table style="width:100%;border-collapse:collapse;table-layout:fixed"><thead><tr style="color:#7dd3fc;font-size:10px;text-transform:uppercase;letter-spacing:.03em"><th style="padding:6px 8px;border-bottom:1px solid rgba(35,54,77,.6);text-align:left;width:28px">#</th><th style="padding:6px 8px;border-bottom:1px solid rgba(35,54,77,.6);text-align:left">Formation<br><span style='font-size:9px;opacity:.7'>Inf/Cav/Arc %</span></th><th style="padding:6px 8px;border-bottom:1px solid rgba(35,54,77,.6);text-align:right;white-space:normal">Est. Def<br>Injuries</th><th style="padding:6px 8px;border-bottom:1px solid rgba(35,54,77,.6);text-align:right;white-space:normal">Est. Att<br>Injuries</th><th style="padding:6px 8px;border-bottom:1px solid rgba(35,54,77,.6);text-align:center;width:44px">Win?</th></tr></thead><tbody style="color:var(--ink)">${rows}</tbody></table>`;
+        $('pvp_count').innerHTML='Tested <strong>'+out.totalTested.toLocaleString()+'</strong> formations';
+        $('pvp_results').style.display='block';
+        $('pvp_results').scrollIntoView({behavior:'smooth',block:'start'});
+        // Show recalibration panel
+        const _ai2=num('pvp_att_inf',0),_ac2=num('pvp_att_cav',0),_aa2=num('pvp_att_arc',0);
+        const _perType2=_ai2+_ac2+_aa2;
+        const _attTotal2=_perType2>0?_perType2:(num('pvp_att_total',0)||150000);
+        const _defTotal2=num('pvp_def_inf',0)+num('pvp_def_cav',0)+num('pvp_def_arc',0)||150000;
+        window.__pvpShowRecal&&window.__pvpShowRecal(out.best, _attTotal2, _defTotal2);
+        status.textContent='Done';status.style.color='#10b981';
+      }catch(e){status.textContent='Error: '+(e.message||e);status.style.color='#ef4444';}
+      finally{btn.disabled=false;btn.innerHTML='&#9654; Run Simulation';}
+    });
+    // Auto-update total when per-type troop counts change
+    ['pvp_att_inf','pvp_att_cav','pvp_att_arc'].forEach(id=>{
+      const el=$(id); if(el) el.addEventListener('input',()=>{
+        const t=num('pvp_att_inf',0)+num('pvp_att_cav',0)+num('pvp_att_arc',0);
+        if(t>0)$('pvp_att_total').value=t;
+      });
+    });
+    ['pvp_def_inf','pvp_def_cav','pvp_def_arc'].forEach(id=>{
+      const el=$(id); if(el) el.addEventListener('input',()=>{
+        const t=num('pvp_def_inf',0)+num('pvp_def_cav',0)+num('pvp_def_arc',0);
+        if(t>0)$('pvp_def_total').value=t;
+      });
+    });
+  })();
+    // Example image lightbox
+    function showExample(src) {
+      const modal = document.getElementById('img_modal');
+      document.getElementById('img_modal_img').src = src;
+      modal.classList.add('open');
+    }
+  </script>
+
+  <script>
+  (function(){
+    var btn = document.getElementById('pvp_run_btn');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        setTimeout(function() {
+          var results = document.getElementById('pvp_results');
+          if (results) results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 300);
+      });
+    }
+  })();
+  </script>
+<script>
+(function(){
+  document.querySelectorAll('.info-banner').forEach(function(banner){
+    var header = banner.querySelector('.info-banner-header');
+    if(!header) return;
+    header.addEventListener('click', function(){
+      banner.classList.toggle('open');
+    });
+  });
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PVP RECALIBRATION SYSTEM
+     After each battle the user enters own losses + defender kills.
+     The engine adapts the search window based on loss rate & trend,
+     re-runs scanPvP, and shows an updated best formation.
+     State persists in localStorage so page refreshes keep history.
+     Max 5 attempts (same daily limit logic as Mystic Trials).
+════════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  'use strict';
+  const PVP_MAX   = 5;
+  const PVP_KEY   = () => 'pvp_recal_session';
+  const $         = id => document.getElementById(id);
+  const num       = (id,d=0) => { const v=parseFloat(($( id)?.value||'').replace(/,/g,'')); return Number.isFinite(v)?v:d; };
+
+  // ── localStorage ──────────────────────────────────────────────
+  function rcLoad(){  try{ const r=localStorage.getItem(PVP_KEY()); return r?JSON.parse(r):null; }catch(_){return null;} }
+  function rcSave(s){ try{ localStorage.setItem(PVP_KEY(),JSON.stringify(s)); }catch(_){} }
+  function rcDrop(){  try{ localStorage.removeItem(PVP_KEY()); }catch(_){} }
+  let _rcState = null;
+  function rcGet(){ if(_rcState) return _rcState; _rcState=rcLoad(); return _rcState; }
+  function rcInit(best, attTotal, defTotal){
+    _rcState = { best:{fi:best.fi,fc:best.fc,fa:best.fa,label:best.label},
+      initial:{fi:best.fi,fc:best.fc,fa:best.fa,label:best.label},
+      attTotal, defTotal, attempts:[], won:false };
+    rcSave(_rcState); return _rcState;
+  }
+
+  // ── Fireworks (same as Mystic) ─────────────────────────────────
+  function launchFireworks(){
+    const cv=$('pvp-fw-canvas'); if(!cv) return;
+    cv.width=window.innerWidth; cv.height=window.innerHeight; cv.style.display='block';
+    const ctx=cv.getContext('2d');
+    const COLS=['#22d3ee','#10b981','#fbbf24','#f87171','#a78bfa','#fff','#60a5fa','#34d399'];
+    let parts=[];
+    function spawnBurst(n){ for(let i=0;i<n;i++){
+      const a=Math.random()*Math.PI*2,s=1.5+Math.random()*8;
+      parts.push({x:cv.width*(0.15+Math.random()*0.7),y:cv.height*(0.15+Math.random()*0.55),
+        vx:Math.cos(a)*s,vy:Math.sin(a)*s-2.5,alpha:1,fade:0.006+Math.random()*0.004,
+        color:COLS[Math.floor(Math.random()*COLS.length)],r:2+Math.random()*4});
+    }}
+    spawnBurst(250);
+    let f=0;
+    (function draw(){
+      ctx.clearRect(0,0,cv.width,cv.height);
+      if(f===60)  spawnBurst(200);
+      if(f===120) spawnBurst(200);
+      if(f===180) spawnBurst(150);
+      parts.forEach(p=>{
+        p.x+=p.vx;p.y+=p.vy;p.vy+=0.09;p.alpha-=p.fade;
+        if(p.alpha<=0)return;
+        ctx.globalAlpha=p.alpha;ctx.fillStyle=p.color;
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+      });
+      ctx.globalAlpha=1;
+      if(f%30===0) parts=parts.filter(p=>p.alpha>0);
+      if(++f<240) requestAnimationFrame(draw);
+      else{ cv.style.display='none'; ctx.clearRect(0,0,cv.width,cv.height); }
+    })();
+  }
+
+  // ── Format helpers ─────────────────────────────────────────────
+  function fmtF(fi,fc){ const fa=Math.max(0,1-fi-fc); return (fi*100).toFixed(1)+'/'+(fc*100).toFixed(1)+'/'+(fa*100).toFixed(1); }
+  function fmtT(fi,fc,tot){
+    if(!tot) return '';
+    const i=Math.round(fi*tot),c=Math.round(fc*tot),a=Math.max(0,tot-i-c);
+    return 'Inf\u202f'+i.toLocaleString()+'\u2002|\u2002Cav\u202f'+c.toLocaleString()+'\u2002|\u2002Arc\u202f'+a.toLocaleString();
+  }
+
+  // ── History card renderer ──────────────────────────────────────
+  function renderHistory(history, attTotal){
+    const wrap=$('pvp_history_wrap'); if(!wrap) return;
+    if(!history||!history.length){ wrap.innerHTML=''; return; }
+    let html='';
+    history.forEach((e,i)=>{
+      const isCurrent=(i===history.length-1);
+      const formation=fmtF(e.fi,e.fc);
+      const troops=fmtT(e.fi,e.fc,attTotal)||'';
+      const isBase=e.isBase;
+      if(isCurrent){
+        const bc=isBase?'green':'';
+        const lbl=isBase?'\u2694\ufe0f Recommended Formation':'\u21bb Recalibrated Formation';
+        const bdCol=isBase?'#10b981':'#22d3ee';
+        const bgCol=isBase?'rgba(16,185,129,.08)':'rgba(34,211,238,.07)';
+        const lc=isBase?'#10b981':'#22d3ee';
+        let sub=isBase?troops:('Attempt\u202f'+e.attemptNum);
+        if(!isBase&&e.summary) sub+='\u2002\u00b7\u2002'+e.summary;
+        if(troops&&!isBase) sub+='\n'+troops;
+        html+='<div style="background:'+bgCol+';border:1px solid '+bdCol+';border-radius:10px;padding:14px;margin-bottom:10px">'+
+          '<div style="font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:'+lc+';margin-bottom:4px">'+lbl+'</div>'+
+          '<div style="font-size:1.5rem;font-weight:800;color:#e9eef7;margin:2px 0 4px">'+formation+'</div>'+
+          '<div style="font-size:.78rem;color:var(--muted);white-space:pre-line">'+sub+'</div>'+
+          '</div>';
+      } else {
+        const dc=isBase?'#10b981':'#22d3ee';
+        const tag=isBase?'Initial':'Attempt\u202f'+e.attemptNum;
+        const move=e.summary?'\u2002\u00b7\u2002'+e.summary:'';
+        html+='<div style="display:flex;align-items:center;gap:8px;padding:5px 10px;background:rgba(255,255,255,.02);border:1px solid #1c2d40;border-radius:8px;margin-bottom:5px;max-width:100%;box-sizing:border-box;overflow:hidden">'+
+          '<div style="width:7px;height:7px;border-radius:50%;background:'+dc+';flex-shrink:0"></div>'+
+          '<span style="font-size:.7rem;color:var(--muted);white-space:normal;min-width:0;overflow:hidden;text-overflow:ellipsis">'+tag+move+'</span>'+
+          '<span style="font-size:.85rem;font-weight:700;color:#c9d5e8;margin-left:auto;flex-shrink:0">'+formation+'</span>'+
+          '</div>';
+      }
+    });
+    wrap.innerHTML=html;
+  }
+
+  // ── Rebuild history array from state ──────────────────────────
+  function buildHistory(state){
+    // Use stored initial formation (not current best which changes after recalibration)
+    const init = state.initial || state.best;
+    const h=[{fi:init.fi,fc:init.fc,fa:init.fa,isBase:true,attemptNum:0,summary:''}];
+    (state.attempts||[]).forEach((a,i)=>{
+      if(a.newBest) h.push({fi:a.newBest.fi,fc:a.newBest.fc,fa:a.newBest.fa,isBase:false,attemptNum:i+1,summary:a.summary||''});
+    });
+    return h;
+  }
+
+  // ── Attempt row management ────────────────────────────────────
+  function addAttemptRow(n){
+    const track=$('pvp_attempt_track'); if(!track) return;
+    if($('pvp_attempt_'+n)) return;
+    const isFinal=(n>=PVP_MAX);
+    const row=document.createElement('div');
+    row.className='pvp-attempt-row lost'; row.id='pvp_attempt_'+n;
+    row.innerHTML=
+      '<div class="pvp-attempt-label">Attempt #'+n+(isFinal?'\u2002\u00b7\u2002Last attempt today':'')+' \u2014 enter battle results</div>'+
+      '<div class="pvp-injured-row">'+
+        '<span class="pvp-injured-label">Own losses:</span>'+
+        '<input class="pvp-injured-input" id="pvp_att_loss_'+n+'" type="number" placeholder="e.g.\u202f90\u202f000" min="0" step="1000" />'+
+      '</div>'+
+      '<div class="pvp-injured-row">'+
+        '<span class="pvp-injured-label">Def killed:</span>'+
+        '<input class="pvp-injured-input" id="pvp_def_kill_'+n+'" type="number" placeholder="e.g.\u202f72\u202f000" min="0" step="1000" />'+
+        '<button class="pvp-apply-btn" id="pvp_apply_'+n+'">Recalibrate \u21bb</button>'+
+      '</div>'+
+      '<div class="pvp-attempt-status" id="pvp_status_'+n+'"></div>';
+    track.appendChild(row);
+    $('pvp_apply_'+n)?.addEventListener('click',()=>applyAttempt(n));
+    ['pvp_att_loss_'+n,'pvp_def_kill_'+n].forEach(id=>{
+      $(id)?.addEventListener('keydown',e=>{ if(e.key==='Enter') applyAttempt(n); });
+    });
+    setTimeout(()=>$('pvp_att_loss_'+n)?.focus(),60);
+  }
+
+  function sealAttemptRow(n, attLoss, defKill, summary){
+    const st=$('pvp_status_'+n);
+    const state=rcGet(); const tot=state?.attTotal||150000; const defT=state?.defTotal||150000;
+    const lp=(attLoss/tot*100).toFixed(0), kp=(defKill/defT*100).toFixed(0);
+    if(st) st.textContent='Own losses: '+attLoss.toLocaleString()+' ('+lp+'%)  \u00b7  Def killed: '+defKill.toLocaleString()+' ('+kp+'%)  \u00b7  '+summary;
+    [$('pvp_att_loss_'+n),$('pvp_def_kill_'+n),$('pvp_apply_'+n)].forEach(el=>{
+      if(el){ el.disabled=true; if(el.tagName==='BUTTON') el.style.display='none'; }
+    });
+  }
+
+  // ── Core: apply one attempt ────────────────────────────────────
+  async function applyAttempt(n){
+    const state=rcGet(); if(!state){ alert('Run simulation first.'); return; }
+    if(state.won) return;
+
+    const attLoss=parseFloat(($('pvp_att_loss_'+n)?.value||'').replace(/,/g,''))||0;
+    const defKill=parseFloat(($('pvp_def_kill_'+n)?.value||'').replace(/,/g,''))||0;
+    if(!attLoss||attLoss<=0){ $('pvp_att_loss_'+n)?.focus(); return; }
+
+    const opt=window.KingSim?.pvpOptimizer;
+    if(!opt?.pvpRecalibrate||!opt?.scanPvP){ alert('Optimizer not loaded'); return; }
+
+    const rc=opt.pvpRecalibrate(state.best, attLoss, state.attTotal, defKill, state.defTotal, state.attempts);
+
+    // Run new scan with recalibrated bounds
+    const status=$('pvp_run_status');
+    if(status){status.textContent='Recalibrating\u2026';status.style.color='#9aa4b2';}
+
+    function readStats(p){
+      return{attack:{inf:num(p+'_inf_atk',0),cav:num(p+'_cav_atk',0),arc:num(p+'_arc_atk',0)},
+             defense:{inf:num(p+'_inf_def',0),cav:num(p+'_cav_def',0),arc:num(p+'_arc_def',0)},
+             lethality:{inf:num(p+'_inf_let',0),cav:num(p+'_cav_let',0),arc:num(p+'_arc_let',0)},
+             health:{inf:num(p+'_inf_hp',0),cav:num(p+'_cav_hp',0),arc:num(p+'_arc_hp',0)}};
+    }
+    const defInf=num('pvp_def_inf',0),defCav=num('pvp_def_cav',0),defArc=num('pvp_def_arc',0);
+
+    try{
+      await new Promise(r=>setTimeout(r,10));
+      const out=opt.scanPvP({
+        attackerTotal:   state.attTotal,
+        attackerStats:   readStats('pvp_att'),
+        attackerTier:    $('pvp_att_tier')?.value||'T10',
+        defenderTroops:  {inf:defInf,cav:defCav,arc:defArc},
+        defenderStats:   readStats('pvp_def'),
+        defenderTier:    $('pvp_def_tier')?.value||'T10',
+        sparsity:        0.01,
+        infMin:rc.infMin, infMax:rc.infMax,
+        cavMin:rc.cavMin, cavMax:rc.cavMax,
+        arcMin:rc.arcMin,
+        maxTop:10,
+        isRecalibration: true,
+      });
+
+      if(!out.best) throw new Error('No results from recalibration');
+      const nb=out.best;
+
+      // Save attempt
+      state.attempts.push({attLoss,defKill,newBest:{fi:nb.fi,fc:nb.fc,fa:nb.fa,label:nb.label},summary:rc.summary});
+      state.best={fi:nb.fi,fc:nb.fc,fa:nb.fa,label:nb.label};
+      rcSave(state);
+
+      sealAttemptRow(n, attLoss, defKill, rc.summary);
+
+      // Re-render history + update main best card
+      const hist=buildHistory({...state,best:{fi:nb.fi,fc:nb.fc,fa:nb.fa},
+        attempts:state.attempts.slice(0,-1).concat([{attLoss,defKill,newBest:nb,summary:rc.summary}])});
+      renderHistory(hist, state.attTotal);
+      updateMainBestCard(nb, state.attTotal);
+
+      // Update Rally Planner with recalibrated formation and auto-refresh strikes
+      window.__pvpBestFormation = { fi: nb.fi, fc: nb.fc };
+      // Auto-refresh rally strikes if panel is open
+      if (typeof window.__refreshRallyStrikes === 'function') window.__refreshRallyStrikes();
+
+      // Show Win/Lost — do NOT auto-open next row
+      const or=$('pvp_outcome_row'); if(or) or.style.display='flex';
+      $('pvp_recal_panel')?.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+      if(status){status.textContent='Recalibrated \u2014 shift \u00b1'+Math.round(rc.shift*100)+'pp';status.style.color='#10b981';}
+    }catch(e){
+      console.error('[PvP Recal]',e);
+      if(status){status.textContent='Error: '+(e.message||e);status.style.color='#ef4444';}
+    }
+  }
+
+  // ── Update the main pvp_best_card to match new best ───────────
+  function updateMainBestCard(best, attTotal){
+    const fi=best.fi,fc=best.fc,fa=Math.max(0,1-fi-fc);
+    const pI=(fi*100).toFixed(1),pC=(fc*100).toFixed(1),pA=(fa*100).toFixed(1);
+    const inf=Math.round(fi*attTotal),cav=Math.round(fc*attTotal),arc=Math.max(0,attTotal-inf-cav);
+    const bv=$('pvp_best_val'); if(bv) bv.textContent=pI+'/'+pC+'/'+pA;
+    const bs=$('pvp_best_sub');
+    if(bs) bs.innerHTML='Infantry: <strong>'+inf.toLocaleString()+'</strong> | Cavalry: <strong>'+cav.toLocaleString()+'</strong> | Archers: <strong>'+arc.toLocaleString()+'</strong>';
+  }
+
+  // ── Show recal panel after initial run ────────────────────────
+  window.__pvpShowRecal = function(best, attTotal, defTotal){
+    const state=rcGet();
+    if(!state||state.won){
+      rcInit(best, attTotal, defTotal);
+      const hist=[{fi:best.fi,fc:best.fc,fa:best.fa,isBase:true,attemptNum:0,summary:''}];
+      renderHistory(hist, attTotal);
+    } else {
+      // Existing session: rebuild history
+      const hist=buildHistory(state);
+      renderHistory(hist, state.attTotal);
+    }
+    const panel=$('pvp_recal_panel'); if(panel) panel.style.display='block';
+    const or=$('pvp_outcome_row'); if(or) or.style.display='flex';
+  };
+
+  // ── Restore saved session on page load ────────────────────────
+  function restoreSession(){
+    const state=rcLoad(); if(!state) return;
+    _rcState=state;
+    if(!state.best) return;
+    const results=$('pvp_results'); if(results) results.style.display='block';
+    const hist=buildHistory(state);
+    renderHistory(hist, state.attTotal);
+    const panel=$('pvp_recal_panel'); if(panel) panel.style.display='block';
+    if(state.won){
+      const track=$('pvp_attempt_track');
+      if(track&&!track.children.length) track.innerHTML='<div style="color:#10b981;font-weight:800;font-size:1rem;padding:10px 0">\uD83C\uDFC6 Victory! Session complete.</div>';
+      const or=$('pvp_outcome_row'); if(or) or.style.display='none';
+      return;
+    }
+    state.attempts.forEach((a,i)=>{
+      addAttemptRow(i+1);
+      sealAttemptRow(i+1, a.attLoss, a.defKill, a.summary||'');
+    });
+    const nextN=state.attempts.length+1;
+    if(nextN<=PVP_MAX){
+      const or=$('pvp_outcome_row'); if(or) or.style.display='flex';
+      if(state.attempts.length>0) addAttemptRow(nextN);
+    }
+  }
+
+  // ── Wire buttons ──────────────────────────────────────────────
+  function wireButtons(){
+    $('pvp_btn_win')?.addEventListener('click',()=>{
+      const state=rcGet(); if(state){state.won=true;rcSave(state);}
+      const or=$('pvp_outcome_row'); if(or) or.style.display='none';
+      const track=$('pvp_attempt_track');
+      if(track) track.innerHTML='<div style="color:#10b981;font-weight:800;font-size:1.05rem;padding:10px 0">\uD83C\uDFC6 Victory confirmed! Formation is solid. Well played!</div>';
+      launchFireworks();
+    });
+
+    $('pvp_btn_lost')?.addEventListener('click',()=>{
+      const state=rcGet();
+      if(!state){ alert('Run simulation first.'); return; }
+      const or=$('pvp_outcome_row'); if(or) or.style.display='none';
+      const nextN=state.attempts.length+1;
+      if(nextN<=PVP_MAX) addAttemptRow(nextN);
+    });
+
+    $('pvp_btn_clear')?.addEventListener('click',()=>{
+      rcDrop(); _rcState=null;
+      const panel=$('pvp_recal_panel'); if(panel) panel.style.display='none';
+      const hw=$('pvp_history_wrap'); if(hw) hw.innerHTML='';
+      const track=$('pvp_attempt_track'); if(track) track.innerHTML='';
+      const or=$('pvp_outcome_row'); if(or) or.style.display='none';
+      const results=$('pvp_results'); if(results) results.style.display='none';
+      const st=$('pvp_run_status');
+      if(st){st.textContent='Cleared \u2014 ready for new session';st.style.color='';}
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    wireButtons();
+    restoreSession();
+  });
+})();
+</script>
+
+<!-- Rally Planner Logic -->
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+
+  window.__pvpBestFormation = null;
+
+  function enableRally(bestFi, bestFc) {
+    window.__pvpBestFormation = { fi: bestFi, fc: bestFc };
+    var btn = $('pvp_rally_btn');
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    var hint = $('pvp_rally_hint');
+    if (hint) hint.textContent = 'Click to plan rally strikes';
+  }
+
+  // Detect simulation completion via MutationObserver on best card
+  var bestCard = $('pvp_best_val');
+  if (bestCard) {
+    new MutationObserver(function() {
+      var label = (bestCard.textContent || '').trim();
+      var parts = label.split('/');
+      if (parts.length >= 3) {
+        var pI = parseFloat(parts[0]) || 0;
+        var pC = parseFloat(parts[1]) || 0;
+        var pA = parseFloat(parts[2]) || 0;
+        var pT = pI + pC + pA;
+        if (pT > 0) enableRally(pI / pT, pC / pT);
+      }
+    }).observe(bestCard, { childList: true, characterData: true, subtree: true });
+  }
+
+  // Rally button toggle
+  var rallyBtn = $('pvp_rally_btn');
+  if (rallyBtn) {
+    rallyBtn.addEventListener('click', function() {
+      var panel = $('pvp_rally_panel');
+      if (!panel) return;
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+      if (panel.style.display === 'block') panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
+  // Compute adapted formations for multiple strikes
+  // Strike 1: use best formation as-is
+  // Strike 2: defender weakened → shift toward more DPS (more arc, less inf)
+  // Strike 3: defender further weakened → even more aggressive DPS
+  function computeStrikes(numStrikes, baseFi, baseFc) {
+    var strikes = [];
+    var fi = baseFi, fc = baseFc;
+
+    for (var s = 0; s < numStrikes; s++) {
+      var fa = Math.max(0, 1 - fi - fc);
+      strikes.push({
+        num: s + 1,
+        fi: fi, fc: fc, fa: fa,
+        label: Math.round(fi*100) + '/' + Math.round(fc*100) + '/' + Math.round(fa*100)
+      });
+
+      if (s < numStrikes - 1) {
+        // Shift toward more DPS for subsequent strikes:
+        // Reduce infantry (tank/meat shield), boost archers (DPS)
+        // Slightly increase cavalry for finishing power
+        var infShift = 0.08; // reduce inf by 8pp per strike
+        var arcBoost = 0.06; // boost arc by 6pp
+        var cavBoost = 0.02; // boost cav by 2pp
+
+        fi = Math.max(0.15, fi - infShift);
+        fc = Math.min(0.35, fc + cavBoost);
+        fa = 1 - fi - fc;
+        // Ensure archers get the boost
+        if (fa < baseFc + arcBoost * (s + 1)) {
+          // Redistribute: take more from inf
+          fi = Math.max(0.10, 1 - fc - (fa + arcBoost));
+        }
+      }
+    }
+    return strikes;
+  }
+
+  function renderStrikes(strikes) {
+    var wrap = $('pvp_rally_strikes');
+    if (!wrap) return;
+
+    var colors = ['#10b981', '#22d3ee', '#f59e0b'];
+    var labels = ['1st Rally — Standard', '2nd Rally — More DPS', '3rd Rally — Max DPS'];
+    var html = '';
+
+    strikes.forEach(function(s, i) {
+      var c = colors[i] || '#a78bfa';
+      html += '<div style="background:rgba(14,20,34,.5);border:1px solid ' + c + '44;border-left:3px solid ' + c + ';border-radius:10px;padding:12px 14px;margin-bottom:8px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">' +
+          '<div>' +
+            '<div style="font-size:.68rem;font-weight:700;color:' + c + ';text-transform:uppercase;letter-spacing:.04em">' + labels[i] + '</div>' +
+            '<div style="font-size:1.4rem;font-weight:800;color:#e9eef7;margin:2px 0">' + s.label + '</div>' +
+            '<div style="font-size:.72rem;color:#a9b3c6">Inf ' + Math.round(s.fi*100) + '% · Cav ' + Math.round(s.fc*100) + '% · Arc ' + Math.round(s.fa*100) + '%</div>' +
+          '</div>' +
+          '<button type="button" class="pvp-rally-copy-btn" data-label="' + s.label + '" style="background:#1a2c44;color:#90b8d8;border:1px solid #3a5878;font-weight:600;padding:6px 12px;border-radius:8px;font-size:.75rem;cursor:pointer;white-space:nowrap">📋 Copy</button>' +
+        '</div>' +
+      '</div>';
+    });
+
+    wrap.innerHTML = html;
+
+    // Wire copy buttons
+    wrap.querySelectorAll('.pvp-rally-copy-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var label = btn.getAttribute('data-label');
+        var text = 'Rally Formation: ' + label + '\nSet your troops to ' + label + ' (Inf/Cav/Arc %)';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function() {
+            btn.textContent = '✓ Copied';
+            btn.style.color = '#10b981';
+            setTimeout(function() { btn.textContent = '📋 Copy'; btn.style.color = '#90b8d8'; }, 2000);
+          });
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+          document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+          document.body.removeChild(ta);
+          btn.textContent = '✓ Copied';
+          btn.style.color = '#10b981';
+          setTimeout(function() { btn.textContent = '📋 Copy'; btn.style.color = '#90b8d8'; }, 2000);
+        }
+      });
+    });
+  }
+
+  // Strike button clicks
+  var strikeBtns = document.querySelectorAll('.pvp-strike-btn');
+  var _selectedStrikes = 0;
+
+  strikeBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var form = window.__pvpBestFormation;
+      if (!form) return;
+
+      // Highlight selected button
+      strikeBtns.forEach(function(b) {
+        b.style.background = '#1a2c44';
+        b.style.borderColor = '#3b2d6b';
+        b.style.color = '#a78bfa';
+      });
+      btn.style.background = '#a78bfa';
+      btn.style.borderColor = '#a78bfa';
+      btn.style.color = '#05121f';
+
+      _selectedStrikes = parseInt(btn.getAttribute('data-strikes')) || 1;
+      var strikes = computeStrikes(_selectedStrikes, form.fi, form.fc);
+      renderStrikes(strikes);
+    });
+  });
+
+  // Auto-refresh rally strikes when recalibration updates the formation
+  window.__refreshRallyStrikes = function() {
+    if (_selectedStrikes <= 0) return; // user hasn't selected strikes yet
+    var form = window.__pvpBestFormation;
+    if (!form) return;
+    var strikes = computeStrikes(_selectedStrikes, form.fi, form.fc);
+    renderStrikes(strikes);
+  };
+})();
+</script>
+</body>
+</html>

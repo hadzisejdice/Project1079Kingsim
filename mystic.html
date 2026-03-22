@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Mystic Trials • KingSim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tell the browser that this page is dark  -->
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f1a">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0b0f1a"><!-- keep dark always -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <!-- Shared theme and helpers -->
+  <link rel="stylesheet" href="assets/fonts.css" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/theme-all.css" />
+  <link rel="stylesheet" href="assets/anim-all.css" />
+  <link rel="stylesheet" href="assets/mobile-all.css" />
+  <script src="assets/fetch-shim.js"></script>
+  <style>
+    /* Page specifics */
+    .container { max-width:1180px; margin:24px auto; padding:0 16px; }
+    .grid-2  { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .grid-3  { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    @media (max-width:980px){ .grid-2{grid-template-columns:1fr;} }
+    .h2{ font-size:22px; font-weight:800; margin:0 0 8px; }
+    .import-card.panel-glass{ padding:14px;border:1px solid #23364d;border-radius:12px; }
+    .dropzone{ display:flex;gap:10px;align-items:center; border:1px dashed #30507a;border-radius:10px;background:#0e1422;padding:14px;cursor:pointer; }
+    #results_table table, #why_table table { width:100%; border-collapse:collapse; background:linear-gradient(180deg, rgba(12,18,30,.35), rgba(10,16,28,.30)); border:1px solid #23364d; border-radius:12px; overflow:hidden; }
+    #results_table th, #results_table td,
+    #why_table th, #why_table td { padding:9px 10px; border-bottom:1px solid rgba(35,54,77,.6); font-size:14px; }
+    #mt_status { min-width: 42px; display:inline-block; }
+    /* Full-width container + safe horizontal scrolling when needed */
+    .table-scroll{
+      width: 100%;
+      min-width: 112px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .btn, .btn-ok, .btn-primary, .btn-secondary, .btn-outline{
+      background: linear-gradient(185deg,#22d3ee,#60a5fa);
+      color:#05121f; border:0; font-weight:600; padding:8px 10px; border-radius:12px;
+      box-shadow:0 6px 12px rgba(34,211,238,.25);
+      width: auto;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+
+    /* Make the table expand to the container width */
+    .table-scroll > table{
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;      /* columns divide evenly; keeps layout stable */
+    }
+
+    /* Optional: if you prefer columns to auto-fit content instead of equal widths,
+      remove table-layout: fixed and use min-width to keep readability on narrow screens */
+    /*
+    .table-scroll > table{
+      min-width: 640px;
+      width: 100%;
+    }
+    */
+
+    /* Cells—keep your existing theme look; these are safe defaults */
+    .table-scroll th, .table-scroll td{
+      padding: 9px 10px;
+      text-align: center;         /* or center if you prefer */
+      white-space: nowrap;      /* prevents ugly wraps; scrolling will appear on mobile */
+    }
+
+    /* If you want some columns centered */
+    .table-scroll th:nth-child(2),
+    .table-scroll td:nth-child(2),
+    .table-scroll th:nth-child(4),
+    .table-scroll td:nth-child(4){
+      text-align: center;
+    }
+
+    /* Small screens: reduce padding so more fits before scrolling */
+    @media (max-width: 640px){
+      .table-scroll th, .table-scroll td{ padding: 7px 8px; }
+    }
+    .import-box{background:rgba(14,20,34,.7);border:1.5px dashed #2a4060;border-radius:12px;padding:12px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;gap:6px;}
+    .import-box:hover{border-color:#22d3ee;}
+    .import-box-label{font-size:.72rem;font-weight:700;color:#7dd3fc;letter-spacing:.04em;text-transform:uppercase;}
+    .import-box-hint{font-size:.72rem;color:var(--muted);}
+    .btn-run{background:linear-gradient(90deg,#22d3ee,#60a5fa);color:#05121f;border:0;font-weight:700;padding:10px 20px;border-radius:12px;font-size:.88rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 6px 18px rgba(34,211,238,.22);}
+    @media(max-width:600px){div[style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr!important;}}
+  
+    /* v2 mystic page upgrades */
+    .grid-3 { align-items: stretch !important; }
+    .import-card.panel-glass { border-left: 3px solid var(--c-accent, #22d3ee); }
+    
+    /* WIN/LOSS row highlighting */
+    tr.row-win td { background: rgba(16,185,129,.06) !important; }
+    tr.row-loss td { background: rgba(239,68,68,.04) !important; }
+
+  
+    /* Mystic scoreboard: integer formations, tight fit on mobile */
+    #why_table th, #why_table td {
+      font-size: 13px;
+    }
+    @media (max-width: 640px) {
+      #why_table table {
+        table-layout: fixed !important;
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      /* Column widths: formation=32%, score=18%, def formation=32%, def score=18% */
+      #why_table th:nth-child(1), #why_table td:nth-child(1) { width: 32%; }
+      #why_table th:nth-child(2), #why_table td:nth-child(2) { width: 18%; }
+      #why_table th:nth-child(3), #why_table td:nth-child(3) { width: 32%; }
+      #why_table th:nth-child(4), #why_table td:nth-child(4) { width: 18%; }
+      #why_table th, #why_table td {
+        padding: 5px 4px !important;
+        font-size: 10px !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        text-align: center !important;
+      }
+      #results_table table {
+        min-width: 0 !important;
+        width: 100% !important;
+      }
+      #results_table th, #results_table td {
+        padding: 5px 4px !important;
+        font-size: 11px !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+      }
+    }
+
+  
+    /* ── Recalibration system ───────────────────────────────── */
+    .recal-panel{margin-top:14px}
+    .recal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+    @media(max-width:600px){.recal-grid{grid-template-columns:1fr}}
+    .best-card-base{background:rgba(16,185,129,.08);border:1px solid #10b981;border-radius:10px;padding:14px}
+    .best-card-recal{background:rgba(34,211,238,.07);border:1px solid #22d3ee;border-radius:10px;padding:14px}
+    .best-card-label{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+    .best-card-label.green{color:#10b981}.best-card-label.cyan{color:#22d3ee}
+    .best-card-formation{font-size:1.5rem;font-weight:800;color:#e9eef7;margin:2px 0 4px}
+    .best-card-sub{font-size:.78rem;color:var(--muted);white-space:pre-line}
+    .outcome-row{display:flex;gap:10px;align-items:center;margin:10px 0 0;flex-wrap:wrap}
+    .btn-win{background:linear-gradient(90deg,#10b981,#059669);color:#fff;border:0;font-weight:700;padding:9px 22px;border-radius:10px;font-size:.9rem;cursor:pointer;min-height:40px;transition:filter .15s}.btn-win:hover{filter:brightness(1.1)}
+    .btn-lost{background:linear-gradient(90deg,#ef4444,#dc2626);color:#fff;border:0;font-weight:700;padding:9px 22px;border-radius:10px;font-size:.9rem;cursor:pointer;min-height:40px;transition:filter .15s}.btn-lost:hover{filter:brightness(1.1)}
+    .attempt-track{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .attempt-row{background:rgba(255,255,255,.03);border:1px solid #1c2d40;border-radius:8px;padding:10px 12px}
+    .attempt-row.lost{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.03)}
+    .attempt-label{font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:4px}
+    .attempt-injured-row{display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap}
+    .attempt-injured-input{width:130px;padding:5px 8px;font-size:.82rem;background:rgba(255,255,255,.04);border:1px solid #1e3048;border-radius:6px;color:var(--ink)}
+    .attempt-apply-btn{padding:5px 14px;font-size:.78rem;font-weight:700;background:rgba(34,211,238,.15);border:1px solid #22d3ee;color:#22d3ee;border-radius:6px;cursor:pointer;min-height:32px}.attempt-apply-btn:hover{background:rgba(34,211,238,.28)}
+    .attempt-status{font-size:.75rem;color:var(--muted);margin-top:4px}
+    .recal-btn-clear{padding:6px 14px;font-size:.78rem;font-weight:700;background:rgba(255,255,255,.04);border:1px solid #2a3850;color:var(--muted);border-radius:8px;cursor:pointer;margin-top:12px}.recal-btn-clear:hover{border-color:#ef4444;color:#ef4444}
+    #fw-canvas{position:fixed;inset:0;pointer-events:none;z-index:9998;display:none}
+    .pre-run-injured{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding:8px 10px;background:rgba(255,255,255,.02);border:1px solid #1a2d40;border-radius:8px}
+    .pre-run-injured label{font-size:.75rem;color:var(--muted);white-space:nowrap}
+    .pre-run-injured input{width:140px;padding:5px 8px;font-size:.82rem;background:rgba(255,255,255,.04);border:1px solid #1e3048;border-radius:6px;color:var(--ink)}
+    .pre-run-injured .hint{font-size:.7rem;color:#3b5f86;font-style:italic}
+  </style>
+  <canvas id="fw-canvas"></canvas>
+</head>
+<body>
+  <!-- NAV (same shared partials) -->
+  <div class="nav"><div class="nav-inner">
+    <a class="brand" href="index.html"><span class="brand-badge"></span>KingSim</a>
+    <div class="nav-links">
+      <a href="index.html" data-tab="home">Home</a>
+      <a href="troops.html" data-tab="troops">Troops & Stats</a>
+      <a href="heros.html" data-tab="heroes">Heroes</a>
+      <a href="magic.html" data-tab="magic">Bear Magic</a>
+      <a href="optiona.html" data-tab="optiona">Bear Option‑A</a>
+      <a href="mystic.html" data-tab="mystic">Mystic Trials</a>
+      <a href="pvp.html" data-tab="pvp">PvP</a>
+</div>
+          <!-- mobile-only CTA cluster; hidden on desktop via your theme CSS -->
+      <div class="nav-ctas">
+        <a class="btn-primary--compact" href="troops.html">🪖</a>
+        <a class="btn-primary--compact" href="heros.html" style="background:linear-gradient(90deg,#0d9488,#1e90b0)">🧙</a>
+        <!-- .nav-toggle is injected by theme-all.js on mobile -->
+      </div>
+  </div>
+</div>
+  <div class="page-spacer"></div>
+
+  <div class="container">
+    <!-- Page Info Banner -->
+    <div class="info-banner" style="background:linear-gradient(135deg,rgba(14,20,34,.7),rgba(9,14,26,.6));border:1px solid #22d3ee33;border-left:3px solid #22d3ee;">
+      <div class="info-banner-header">
+        <span class="info-banner-emoji">🧭</span>
+        <span class="info-banner-title">Mystic Trials — PvE Battle Simulator</span>
+        <div class="info-banner-toggle">
+          <span class="info-banner-arrows">&#8963;<br>&#8964;</span>
+        </div>
+      </div>
+      <div class="info-banner-body">
+        <p>Fight fixed defender formations set by each trial stage. Import your Battle Details bonus screen from the game, pick the trial name, and hit Run. The engine scans 220+ attacker formations and recommends the one that deals maximum damage.</p>
+        <div class="info-banner-tags"><span class="info-tag" style="color:#7dd3fc;border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.08)">220+ formations tested</span><span class="info-tag" style="color:#7dd3fc;border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.08)">Each trial has unique stat bonuses</span><span class="info-tag" style="color:#7dd3fc;border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.08)">Result shows exact formation to march</span></div>
+      </div>
+    </div>
+    <!-- Import & controls -->
+    <section class="panel panel-glass">
+      <h2 class="h2" style="text-align: center;">🧭 Mystic Trials(PvE) 🧭<br>Battle Simulator</h2>
+
+      <!-- 3-col grid: Import | Trial | Run — all IDs kept for JS hooks -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:4px">
+
+        <!-- col 1: import box (dashed, clickable) -->
+        <div class="import-box" id="pve_dz"
+             style="min-height:80px;gap:6px;cursor:pointer;padding:12px"
+             onclick="document.getElementById('pve_file').click()">
+          <div style="display:flex;align-items:flex-start;gap:8px">
+            <img src="assets/example_mystic.jpg"
+                 style="width:44px;height:32px;object-fit:cover;border-radius:5px;opacity:.6;border:1px solid #2a4060;cursor:pointer;flex-shrink:0;transition:opacity .15s"
+                 onmouseover="this.style.opacity='1';this.style.borderColor='#22d3ee'"
+                 onmouseout="this.style.opacity='.6';this.style.borderColor='#2a4060'"
+                 onclick="event.stopPropagation();(function(s){var m=document.getElementById('mystic_img_modal');if(!m){m=document.createElement('div');m.id='mystic_img_modal';m.style.cssText='display:flex;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;cursor:pointer';m.onclick=function(){this.style.display='none'};var i=document.createElement('img');i.style.cssText='max-width:92vw;max-height:92vh;border-radius:10px';m.appendChild(i);document.body.appendChild(m)}document.querySelector('#mystic_img_modal img').src=s;document.getElementById('mystic_img_modal').style.display='flex'}('assets/example_mystic.jpg'))"
+                 title="Click to see example" alt="example" />
+            <div>
+              <div class="import-box-label">Battle Report Import</div>
+              <div class="import-box-hint">Click box to import Bonus Details screenshot</div>
+            </div>
+          </div>
+          <!-- keep pve_browse for JS; hide it visually since whole box is clickable -->
+          <button id="pve_browse" style="display:none"></button>
+          <input id="pve_file" type="file" accept="image/*" style="display:none" onclick="event.stopPropagation()" />
+          <div id="pve_ocr_status" style="font-size:.75rem;min-height:14px;color:#10b981"></div>
+        </div>
+
+        <!-- col 2: trial selector -->
+        <div style="display:flex;flex-direction:column;justify-content:center;gap:6px">
+          <label for="mt_trial" style="font-size:.72rem;font-weight:700;color:#7dd3fc;text-transform:uppercase;letter-spacing:.04em;margin:0">Mystic Trial</label>
+          <select id="mt_trial" style="width:100%">
+            <option value="Crystal Cave">Crystal Cave</option>
+            <option value="Forest of Life">Forest of Life</option>
+            <option value="Knowledge Nexus">Knowledge Nexus</option>
+            <option value="Molten Fort">Molten Fort</option>
+          </select>
+        </div>
+
+        <!-- col 3: run button + status -->
+        <div style="display:flex;flex-direction:column;justify-content:center;gap:8px">
+          <button id="mt_run" class="btn-run" style="font-size:.88rem;padding:10px 16px;min-height:42px">▶ Run Simulation</button>
+          <span id="mt_status" class="muted" style="font-size:.78rem">Idle</span>
+        </div>
+
+      </div>
+
+      <!-- Pre-run injured input — optional, triggers instant recalibration on run -->
+      <div class="pre-run-injured" id="pre_run_injured_row">
+        <label for="mt_prior_injured">Injured from last battle:</label>
+        <input type="number" id="mt_prior_injured" placeholder="e.g. 136 571" min="0" step="1000" />
+        <span class="hint">Optional — leave blank for standard simulation</span>
+      </div>
+    </section>
+
+    <!-- RESULTS go directly below the Run button (above inputs) -->
+    <section class="panel panel-glass" id="mt_results" style="display:none">
+      <div id="mt_bestline" class="muted" style="margin:0 0 12px 0"></div>
+      <div id="mt_tablewrap"></div>
+
+      <!-- ══ RECALIBRATION PANEL ══ shown after first simulation result -->
+      <div class="recal-panel" id="mt_recal_panel" style="display:none">
+        <div style="font-size:.72rem;font-weight:700;color:#7dd3fc;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">
+          Battle Follow-up &amp; Recalibration
+        </div>
+
+        <!-- Dynamic formation history cards (injected by JS) -->
+        <!-- id="rc_history_wrap" is created by JS and inserted here -->
+
+        <!-- Win / Lost outcome buttons -->
+        <div class="outcome-row" id="rc_outcome_row" style="display:none">
+          <span style="font-size:.78rem;color:var(--muted)">How did the battle go?</span>
+          <div style="display:flex;gap:10px">
+            <button class="btn-win"  id="rc_btn_win">&#127942; Win!</button>
+            <button class="btn-lost" id="rc_btn_lost">&#128128; Lost</button>
+          </div>
+        </div>
+
+        <!-- Per-attempt rows injected dynamically (max 5) -->
+        <div class="attempt-track" id="rc_attempt_track"></div>
+
+        <button class="recal-btn-clear" id="rc_btn_clear">&#10005; Clear session &amp; start over</button>
+      </div>
+    </section>
+
+    <!-- 2-grid stats & troops -->
+    <section class="panel panel-glass">
+      <h3>Stats & Troops</h3>
+      <div class="grid-2">
+        <!-- Attacker -->
+        <div>
+          <h4>Attacker</h4>
+          <label>Troop Tier</label>
+          <select id="att_tier">
+            <option>T6</option><option>T9</option><option selected>T10</option>
+            <option>T10.TG1</option><option>T10.TG2</option><option>T10.TG3</option>
+            <option>T10.TG4</option><option>T10.TG5</option>
+          </select>
+          <label style="margin-top:8px">Total troops</label><input id="att_total" type="number" step="1000" value="0"/>
+
+          <div class="grid-3" style="margin-top:8px">
+            <div>
+              <h5>Infantry</h5>
+              <label>Troops</label><input id="att_inf" type="number" step="1000" value="0"/>
+              <label>Attack (%)</label><input id="att_inf_atk" type="number" step="0.1" value="100"/>
+              <label>Defense (%)</label><input id="att_inf_def" type="number" step="0.1" value="100"/>
+              <label>Lethality (%)</label><input id="att_inf_let" type="number" step="0.1" value="100"/>
+              <label>Health (%)</label><input id="att_inf_hp" type="number" step="0.1" value="100"/>
+            </div>
+            <div>
+              <h5>Cavalry</h5>
+              <label>Troops</label><input id="att_cav" type="number" step="1000" value="0"/>
+              <label>Attack (%)</label><input id="att_cav_atk" type="number" step="0.1" value="100"/>
+              <label>Defense (%)</label><input id="att_cav_def" type="number" step="0.1" value="100"/>
+              <label>Lethality (%)</label><input id="att_cav_let" type="number" step="0.1" value="100"/>
+              <label>Health (%)</label><input id="att_cav_hp" type="number" step="0.1" value="100"/>
+            </div>
+            <div>
+              <h5>Archers</h5>
+              <label>Troops</label><input id="att_arc" type="number" step="1000" value="0"/>
+              <label>Attack (%)</label><input id="att_arc_atk" type="number" step="0.1" value="100"/>
+              <label>Defense (%)</label><input id="att_arc_def" type="number" step="0.1" value="100"/>
+              <label>Lethality (%)</label><input id="att_arc_let" type="number" step="0.1" value="100"/>
+              <label>Health (%)</label><input id="att_arc_hp" type="number" step="0.1" value="100"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Defender -->
+        <div>
+          <h4>Defender</h4>
+          <label>Troop Tier</label>
+          <select id="def_tier">
+            <option>T6</option><option>T9</option><option selected>T10</option>
+            <option>T10.TG1</option><option>T10.TG2</option><option>T10.TG3</option>
+            <option>T10.TG4</option><option>T10.TG5</option>
+          </select>
+          <label style="margin-top:8px">Total troops</label><input id="def_total" type="number" step="1000" value="0"/>
+
+          <div class="grid-3" style="margin-top:8px">
+            <div>
+              <h5>Infantry</h5>
+              <label>Troops</label><input id="def_inf" type="number" step="1000" value="0"/>
+              <label>Attack (%)</label><input id="def_inf_atk" type="number" step="0.1" value="100"/>
+              <label>Defense (%)</label><input id="def_inf_def" type="number" step="0.1" value="100"/>
+              <label>Lethality (%)</label><input id="def_inf_let" type="number" step="0.1" value="100"/>
+              <label>Health (%)</label><input id="def_inf_hp" type="number" step="0.1" value="100"/>
+            </div>
+            <div>
+              <h5>Cavalry</h5>
+              <label>Troops</label><input id="def_cav" type="number" step="1000" value="0"/>
+              <label>Attack (%)</label><input id="def_cav_atk" type="number" step="0.1" value="100"/>
+              <label>Defense (%)</label><input id="def_cav_def" type="number" step="0.1" value="100"/>
+              <label>Lethality (%)</label><input id="def_cav_let" type="number" step="0.1" value="100"/>
+              <label>Health (%)</label><input id="def_cav_hp" type="number" step="0.1" value="100"/>
+            </div>
+            <div>
+              <h5>Archers</h5>
+              <label>Troops</label><input id="def_arc" type="number" step="1000" value="0"/>
+              <label>Attack (%)</label><input id="def_arc_atk" type="number" step="0.1" value="100"/>
+              <label>Defense (%)</label><input id="def_arc_def" type="number" step="0.1" value="100"/>
+              <label>Lethality (%)</label><input id="def_arc_let" type="number" step="0.1" value="100"/>
+              <label>Health (%)</label><input id="def_arc_hp" type="number" step="0.1" value="100"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <!-- Engine & UI wires (reuse your existing core bundle order) -->
+  <script src="sim/engine/battleCore.js"></script>
+  <script src="sim/engine/mysticOptimizer.js"></script>
+  <!-- Legacy engine (kept for fallback) -->
+  <script src="sim/engine/rng.js"></script>
+  <script src="sim/engine/formulas.js"></script>
+  <script src="sim/engine/battle.js"></script>
+  <script src="sim/engine/mysticTrials.js"></script>
+  <script src="sim/engine/optimizer.js"></script>
+  <script src="sim/kingSim.js"></script>
+  <!-- OCR (reuse) -->
+  <script src="sim/ocr/mystic_ocr.js"></script>
+  <script src="sim/ui/mystic_onebox.js"></script>
+  
+  <!-- Page logic -->
+  <script>
+  (function(){
+    'use strict';
+    // Small helpers
+    const $ = id => document.getElementById(id);
+    const num = (v,d=0)=>{const n=parseFloat(String(v).replace(',','.')); return Number.isFinite(n)?n:d;};
+    const sum = (obj)=>['inf','cav','arc'].reduce((s,k)=>s+(obj[k]||0),0);
+
+    // Wire OCR (reuse your mounted handlers) and adapt to our field IDs
+    // We hook into mystic_ocr.js by monkey‑patching its setVal/applyStats if present.  [3](https://tipicoltd-my.sharepoint.com/personal/hadzisejdice_tipico_com/Documents/Datoteke%20aplikacije%20Microsoft%20Copilot%20Chat/rng.js)
+    const ok = !!window.Tesseract; // loaded lazily by mystic_ocr when importing
+    // Bridge: when mystic_ocr sets mt_* fields, also mirror to pve_* where applicable
+    // (If you prefer, extend mystic_ocr.js to target these IDs directly.)
+
+    // Import handlers (UX)
+    const dz = $('pve_dz'), file = $('pve_file'), browse = $('pve_browse');
+    const status = $('pve_ocr_status');
+    function setOcrStatus(s){ status.textContent = s || ''; }
+    browse.addEventListener('click', ()=>file.click());
+    ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.style.borderColor='#3b82f6'}));
+    ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.style.borderColor='#30507a'}));
+    dz.addEventListener('drop', e=>{ const f=e.dataTransfer?.files?.[0]; if(f) file.files = e.dataTransfer.files; file.dispatchEvent(new Event('change',{bubbles:true})); });
+
+    // Patch mystic_ocr mount: we simply re-trigger its input updates after OCR done to copy values here.
+    const originalSetVal = (id,v)=>{
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = (v==null?'':v);
+      el.dispatchEvent(new Event('input',{bubbles:true}));
+      el.dispatchEvent(new Event('change',{bubbles:true}));
+    };
+
+    file.addEventListener('change', async (e)=>{
+      // use existing OCR by temporarily aliasing expected IDs from mystic.html to our page
+      // Attacker/Defender stats:
+      const map = [
+        // attacker
+        ['mt_atk_inf_atk','att_inf_atk'],['mt_atk_inf_def','att_inf_def'],['mt_atk_inf_let','att_inf_let'],['mt_atk_inf_hp','att_inf_hp'],
+        ['mt_atk_cav_atk','att_cav_atk'],['mt_atk_cav_def','att_cav_def'],['mt_atk_cav_let','att_cav_let'],['mt_atk_cav_hp','att_cav_hp'],
+        ['mt_atk_arc_atk','att_arc_atk'],['mt_atk_arc_def','att_arc_def'],['mt_atk_arc_let','att_arc_let'],['mt_atk_arc_hp','att_arc_hp'],
+        // defender
+        ['mt_def_inf_atk','def_inf_atk'],['mt_def_inf_def','def_inf_def'],['mt_def_inf_let','def_inf_let'],['mt_def_inf_hp','def_inf_hp'],
+        ['mt_def_cav_atk','def_cav_atk'],['mt_def_cav_def','def_cav_def'],['mt_def_cav_let','def_cav_let'],['mt_def_cav_hp','def_cav_hp'],
+      ];
+      // totals + tiers
+      const mapTotals = [
+        ['mt_atk_total','att_total'],
+        ['mt_def_total','def_total'],
+        ['mt_atk_tier','att_tier'],
+        ['mt_def_tier','def_tier'],
+      ];
+
+      const f = e.target.files?.[0];
+      if (!f) return;
+      try{
+        setOcrStatus('⏳ OCR…');
+        // invoke same parse flow by creating a temporary hidden form on the fly through mystic_ocr
+        // mystic_ocr.js already mounts on DOMContentLoaded and wires its own inputs. [3](https://tipicoltd-my.sharepoint.com/personal/hadzisejdice_tipico_com/Documents/Datoteke%20aplikacije%20Microsoft%20Copilot%20Chat/rng.js)
+        // We reuse its exported behavior by simulating a file selection into its <input id="mt_file"> if present.
+        const shim = document.getElementById('mt_file');
+        if (!shim){
+          // create a hidden <input id="mt_file"> so mystic_ocr finds it
+          const h = document.createElement('input');
+          h.type='file'; h.accept='image/*'; h.id='mt_file'; h.style.display='none';
+          document.body.appendChild(h);
+        }
+        // assign FileList to shim and dispatch change; mystic_ocr will fill mt_* fields
+        const dataTransfer = new DataTransfer(); dataTransfer.items.add(f);
+        document.getElementById('mt_file').files = dataTransfer.files;
+        document.getElementById('mt_file').dispatchEvent(new Event('change', {bubbles:true}));
+
+        // After a tiny delay (OCR time is longer anyway), mirror mt_* into our inputs.
+        const poll = setInterval(()=>{
+          // heuristic: when attacker inf atk has changed away from 100, assume OCR done
+          const a = document.getElementById('mt_atk_inf_atk')?.value;
+          if (a && a !== '100'){
+            clearInterval(poll);
+            [...map, ...mapTotals].forEach(([src,dst])=>{
+              const v = document.getElementById(src)?.value;
+              if (v!=null) originalSetVal(dst, v);
+            });
+            setOcrStatus('✅ Imported. TIP: set defender per‑type troops or use trial presets.');
+          }
+        }, 1200);
+      }catch(err){
+        console.error('[PvE OCR]', err);
+        setOcrStatus('❌ OCR failed');
+      }
+    });
+
+    // Run button
+    $('pve_run').addEventListener('click', async ()=>{
+      const ui = {
+        trial: $('pve_trial').value,
+        battles: Math.max(1, Math.min(1000, num($('pve_battles').value, 120))),
+        sparsity: Math.max(0.01, Math.min(0.2, num($('pve_sparsity').value, 0.05))),
+        fiMin: Math.max(0, Math.min(1, num($('pve_fi_min').value, 0.40))),
+        fiMax: Math.max(0, Math.min(1, num($('pve_fi_max').value, 0.80))),
+        fcMin: Math.max(0, Math.min(1, num($('pve_fc_min').value, 0.15))),
+        fcMax: Math.max(0, Math.min(1, num($('pve_fc_max').value, 0.30))),
+        seed: num($('pve_seed').value, 1337)
+      };
+      const status = $('pve_status');
+      status.textContent = 'Running…'; status.style.color = '#9aa4b2';
+
+      // Build attacker / defender bases from inputs
+      const attackerBase = {
+        totalTroops: num($('att_total').value, 0),
+        tier: $('att_tier').value,
+        stats: {
+          attack: { inf:num($('att_inf_atk').value,100), cav:num($('att_cav_atk').value,100), arc:num($('att_arc_atk').value,100) },
+          defense:{ inf:num($('att_inf_def').value,100), cav:num($('att_cav_def').value,100), arc:num($('att_arc_def').value,100) },
+          lethality:{inf:num($('att_inf_let').value,100), cav:num($('att_cav_let').value,100), arc:num($('att_arc_let').value,100) },
+          health:{ inf:num($('att_inf_hp').value,100), cav:num($('att_cav_hp').value,100), arc:num($('att_arc_hp').value,100) }
+        }
+      };
+
+      const defTroops = { inf:num($('def_inf').value,0), cav:num($('def_cav').value,0), arc:num($('def_arc').value,0) };
+      const defenderBase = {
+        totalTroops: num($('def_total').value, 0),
+        tier: $('def_tier').value,
+        stats: {
+          attack: { inf:num($('def_inf_atk').value,100), cav:num($('def_cav_atk').value,100), arc:num($('def_arc_atk').value,100) },
+          defense:{ inf:num($('def_inf_def').value,100), cav:num($('def_cav_def').value,100), arc:num($('def_arc_def').value,100) },
+          lethality:{inf:num($('def_inf_let').value,100), cav:num($('def_cav_let').value,100), arc:num($('def_arc_let').value,100) },
+          health:{ inf:num($('def_inf_hp').value,100), cav:num($('def_cav_hp').value,100), arc:num($('def_arc_hp').value,100) }
+        },
+        troops: (sum(defTroops)>0 ? defTroops : undefined)
+      };
+
+      // If defender per-type not set, build fractions from trial preset
+      let defenderFractions = undefined;
+      if (!defenderBase.troops || sum(defenderBase.troops) === 0){
+        const presets = {
+          'Crystal Cave':       {fi:0.60, fc:0.20, fa:0.20},
+          'Knowledge Nexus':    {fi:0.50, fc:0.20, fa:0.30},
+          'Radiant Spire':      {fi:0.50, fc:0.15, fa:0.35},
+          'Forest of Life':     {fi:0.50, fc:0.15, fa:0.35},
+          'Molten Fort':        {fi:0.60, fc:0.15, fa:0.25},
+          'Coliseum-March1-Calv2nd': {fi:0.50, fc:0.10, fa:0.40},
+          'Coliseum-March2-Calv1st': {fi:0.40, fc:0.40, fa:0.20}
+        };
+        defenderFractions = presets[ui.trial] || {fi:0.55, fc:0.20, fa:0.25};
+      }
+
+      try{
+        const out = await window.KingSim._optimizer.scanFixedDefenderAdaptive({
+          attackerBase, defenderBase, defenderFractions,
+          trialName: ui.trial,
+          maxTop: 10,
+          battlesPerPoint: ui.battles,
+          sparsity: ui.sparsity,
+          fiMin: ui.fiMin, fiMax: ui.fiMax,
+          fcMin: ui.fcMin, fcMax: ui.fcMax,
+          seed: ui.seed
+        }); // uses battle core + trials  [1](https://tipicoltd-my.sharepoint.com/personal/hadzisejdice_tipico_com/Documents/Datoteke%20aplikacije%20Microsoft%20Copilot%20Chat/optimizer.js)[3](https://tipicoltd-my.sharepoint.com/personal/hadzisejdice_tipico_com/Documents/Datoteke%20aplikacije%20Microsoft%20Copilot%20Chat/rng.js)
+
+        // Headline
+        const fi = Math.round(out.best.fractions.fi*100);
+        const fc = Math.round(out.best.fractions.fc*100);
+        const fa = Math.max(0, 100 - fi - fc);
+        $('bestline').textContent =
+          `Best composition ≈ ${fi}/${fc}/${fa} (Inf/Cav/Arc) · Win ≈ ${out.best.winChance}% · `+
+          `AtkScore=${Math.round(+out.best.atkScore).toLocaleString()} · DefScore=${Math.round(+out.best.defScore).toLocaleString()} · ${ui.trial}`;
+
+        // Table 1: chosen formation set (directly under Run)
+        const total = num($('att_total').value, 0);
+        const i = Math.round(out.best.fractions.fi * total);
+        const c = Math.round(out.best.fractions.fc * total);
+        const a = Math.max(0, total - i - c);
+        const t1 = document.createElement('table');
+        t1.innerHTML = `
+          <thead><tr>
+            <th>Formation (I/C/A %)</th><th>Inf troops</th><th>Cav troops</th><th>Arc troops</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td>${fi}/${fc}/${fa}</td>
+              <td>${i.toLocaleString()}</td>
+              <td>${c.toLocaleString()}</td>
+              <td>${a.toLocaleString()}</td>
+            </tr>
+          </tbody>`;
+        $('results_table').innerHTML = ''; $('results_table').appendChild(t1);
+
+        // Table 2: WHY — attacker Top-10 vs defender fixed
+        const def = out.defender;
+        const di = Math.round(def.fractions.fi*100);
+        const dc = Math.round(def.fractions.fc*100);
+        const da = Math.max(0, 100 - di - dc);
+        const t2 = document.createElement('table');
+        const rows = out.top.map(p=>{
+          const ti = Math.round(p.fi * total);
+          const tc = Math.round(p.fc * total);
+          const ta = Math.max(0, total - ti - tc);
+          return `
+            <tr>
+              <td>${p.label.replace(/(\d+)\.\d+/g,'$1')}</td>
+              <td>${Math.round(+p.atkScore).toLocaleString()}</td>
+              <td>${di}/${dc}/${da}</td>
+              <td>${Math.round(+p.defScore).toLocaleString()}</td>
+            </tr>`;
+        }).join('');
+        t2.innerHTML = `
+          <thead><tr>
+            <th>Attacker formation (I/C/A %)</th>
+            <th>Attacker score</th>
+            <th>Defender formation (I/C/A %)</th>
+            <th>Defender score</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>`;
+        $('why_table').innerHTML = ''; $('why_table').appendChild(t2);
+
+        status.textContent = 'Done'; status.style.color = '#10b981';
+      }catch(e){
+        console.error('[PvE] failed', e);
+        status.textContent = 'Error: ' + (e?.message||e); status.style.color = '#ef4444';
+      }
+    });
+  })();
+  </script>
+  <!-- FOOTER AUTO-INSERT -->
+  <script src="assets/footer.js"></script>
+  <!-- Shared theme behavior -->
+  <script src="assets/theme-all.js"></script>
+  <script src="assets/anim-all.js"></script>
+  <script src="assets/mobile-all.js"></script>
+
+  <script>
+  // v2: smooth scroll to results after sim completes
+  (function(){
+    var origRun = window.ksMysticRun;
+    var mt_run = document.getElementById('mt_run');
+    if (mt_run) {
+      mt_run.addEventListener('click', function() {
+        setTimeout(function() {
+          var results = document.getElementById('mt_results') || document.getElementById('results_table');
+          if (results) results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 200);
+      });
+    }
+  })();
+  </script>
+<script>
+(function(){
+  document.querySelectorAll('.info-banner').forEach(function(banner){
+    var header = banner.querySelector('.info-banner-header');
+    if(!header) return;
+    header.addEventListener('click', function(){
+      banner.classList.toggle('open');
+    });
+  });
+})();
+</script>
+</body>
+</html>

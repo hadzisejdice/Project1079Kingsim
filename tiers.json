@@ -1,0 +1,2502 @@
+{
+  "version": "2026-03-20",
+  "game": "Kingshot",
+  "dynamicText": true,
+  "source_notes": {
+    "tiers_source": "tiers.json (user upload)",
+    "tiers_citation": "turn1search1",
+    "interpolation_model": "Stars: 6 parts per star; band ramp 1:2:3:4 unless explicit per-part data given; Skills/Widgets: linear fill between known endpoints"
+  },
+  "troops": {
+    "types": {
+      "Infantry": {
+        "passives": [
+          {
+            "name": "Master Brawler",
+            "effect": {
+              "enemyType": "Cavalry",
+              "damageDealtUp_percent": 10
+            }
+          },
+          {
+            "name": "Bands of Steel",
+            "effect": {
+              "enemyType": "Cavalry",
+              "defenseUp_percent": 10
+            }
+          }
+        ]
+      },
+      "Cavalry": {
+        "passives": [
+          {
+            "name": "Charge",
+            "effect": {
+              "enemyType": "Archer",
+              "damageDealtUp_percent": 10
+            }
+          },
+          {
+            "name": "Ambusher",
+            "effect": {
+              "bypassInfantry_chance_percent": 20,
+              "target": "Archers"
+            }
+          }
+        ]
+      },
+      "Archer": {
+        "passives": [
+          {
+            "name": "Ranged Strike",
+            "effect": {
+              "enemyType": "Infantry",
+              "damageDealtUp_percent": 10
+            }
+          },
+          {
+            "name": "Volley",
+            "effect": {
+              "extraAttack_chance_percent": 10
+            }
+          }
+        ]
+      }
+    },
+    "truegold_additions": {
+      "Infantry": [
+        {
+          "name": "Unyielding Shield",
+          "requiresTGLevel": 3,
+          "reduceIncomingDamage_chance_percent": 25,
+          "reduceIncomingDamage_value_percent": 36
+        },
+        {
+          "name": "Unyielding Shield (Upgraded)",
+          "requiresTGLevel": 5,
+          "reduceIncomingDamage_chance_percent": 37.5,
+          "reduceIncomingDamage_value_percent": 36
+        }
+      ],
+      "Cavalry": [
+        {
+          "name": "Assault Lance",
+          "requiresTGLevel": 3,
+          "doubleDamage_chance_percent": 10
+        },
+        {
+          "name": "Assault Lance (Upgraded)",
+          "requiresTGLevel": 5,
+          "doubleDamage_chance_percent": 15
+        }
+      ],
+      "Archer": [
+        {
+          "name": "Howling Wind",
+          "requiresTGLevel": 3,
+          "extraDamage_chance_percent": 20,
+          "extraDamage_value_percent": 50
+        },
+        {
+          "name": "Howling Wind (Upgraded)",
+          "requiresTGLevel": 5,
+          "extraDamage_chance_percent": 30,
+          "extraDamage_value_percent": 50
+        }
+      ]
+    },
+    "tiers": {
+      "T6": {
+        "inf": [
+          243,
+          730
+        ],
+        "cav": [
+          730,
+          243
+        ],
+        "arc": [
+          974,
+          183
+        ]
+      },
+      "T9": {
+        "inf": [
+          400,
+          1200
+        ],
+        "cav": [
+          1200,
+          400
+        ],
+        "arc": [
+          1600,
+          300
+        ]
+      },
+      "T10": {
+        "inf": [
+          472,
+          1416
+        ],
+        "cav": [
+          1416,
+          470
+        ],
+        "arc": [
+          1888,
+          354
+        ]
+      },
+      "T10.TG1": {
+        "inf": [
+          491,
+          1473
+        ],
+        "cav": [
+          1473,
+          491
+        ],
+        "arc": [
+          1964,
+          368
+        ]
+      },
+      "T10.TG2": {
+        "inf": [
+          515,
+          1546
+        ],
+        "cav": [
+          1546,
+          515
+        ],
+        "arc": [
+          2062,
+          387
+        ]
+      },
+      "T10.TG3": {
+        "inf": [
+          541,
+          1624
+        ],
+        "cav": [
+          1624,
+          541
+        ],
+        "arc": [
+          2165,
+          402
+        ]
+      },
+      "T10.TG4": {
+        "inf": [
+          568,
+          1705
+        ],
+        "cav": [
+          1705,
+          568
+        ],
+        "arc": [
+          2273,
+          426
+        ]
+      },
+      "T10.TG5": {
+        "inf": [
+          597,
+          1790
+        ],
+        "cav": [
+          1790,
+          597
+        ],
+        "arc": [
+          2387,
+          448
+        ]
+      }
+    }
+  },
+  "heroes": [
+    {
+      "name": "Amadeus",
+      "troopType": "Infantry",
+      "skills": [
+        {
+          "name": "Battle Ready",
+          "levels": {
+            "Level 1": {
+              "lethalityUp_percent": 5
+            },
+            "Level 2": {
+              "lethalityUp_percent": 10
+            },
+            "Level 3": {
+              "lethalityUp_percent": 15
+            },
+            "Level 4": {
+              "lethalityUp_percent": 20
+            },
+            "Level 5": {
+              "lethalityUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Way of the Blade",
+          "levels": {
+            "Level 1": {
+              "attackUp_percent": 5
+            },
+            "Level 2": {
+              "attackUp_percent": 10
+            },
+            "Level 3": {
+              "attackUp_percent": 15
+            },
+            "Level 4": {
+              "attackUp_percent": 20
+            },
+            "Level 5": {
+              "attackUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Unrighteous Strike",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 8
+            },
+            "Level 2": {
+              "procChance_percent": 16
+            },
+            "Level 3": {
+              "procChance_percent": 24
+            },
+            "Level 4": {
+              "procChance_percent": 32
+            },
+            "Level 5": {
+              "procChance_percent": 40
+            }
+          }
+        }
+      ],
+      "passiveAlways": {
+        "name": "Born Leader",
+        "description": "Boosts all deployed soldiers' Lethality and Health even when Amadeus is absent",
+        "tier1": {
+          "lethalityUp_percent": {
+            "Level 1": 3,
+            "Level 2": 6,
+            "Level 3": 9,
+            "Level 4": 12,
+            "Level 5": 15
+          },
+          "healthUp_percent": {
+            "Level 1": 3,
+            "Level 2": 6,
+            "Level 3": 9,
+            "Level 4": 12,
+            "Level 5": 15
+          }
+        },
+        "tier2": {
+          "lethalityUp_percent": {
+            "Level 1": 4,
+            "Level 2": 8,
+            "Level 3": 12,
+            "Level 4": 16,
+            "Level 5": 20
+          },
+          "healthUp_percent": {
+            "Level 1": 4,
+            "Level 2": 8,
+            "Level 3": 12,
+            "Level 4": 16,
+            "Level 5": 20
+          }
+        }
+      },
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Double Parry",
+            "levels": {
+              "⚔️ Lv.1": {
+                "damageTakenDown_percent": 10
+              },
+              "⚔️ Lv.2": {
+                "damageTakenDown_percent": 15
+              },
+              "⚔️ Lv.3": {
+                "damageTakenDown_percent": 20
+              },
+              "⚔️ Lv.4": {
+                "damageTakenDown_percent": 25
+              },
+              "⚔️ Lv.5": {
+                "damageTakenDown_percent": 30
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Discernment",
+            "levels": {
+              "⚔️ Lv.1": {
+                "rallyAttackUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "rallyAttackUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "rallyAttackUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "rallyAttackUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "rallyAttackUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Jabel",
+      "troopType": "Cavalry",
+      "skills": [
+        {
+          "name": "Rally Flag",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 8
+            },
+            "Level 2": {
+              "procChance_percent": 16
+            },
+            "Level 3": {
+              "procChance_percent": 24
+            },
+            "Level 4": {
+              "procChance_percent": 32
+            },
+            "Level 5": {
+              "procChance_percent": 40
+            }
+          }
+        },
+        {
+          "name": "Hero's Domain",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 10
+            },
+            "Level 2": {
+              "procChance_percent": 20
+            },
+            "Level 3": {
+              "procChance_percent": 30
+            },
+            "Level 4": {
+              "procChance_percent": 40
+            },
+            "Level 5": {
+              "procChance_percent": 50
+            }
+          }
+        },
+        {
+          "name": "Youthful Rage",
+          "levels": {
+            "Level 1": {
+              "lethalityUp_percent": 5
+            },
+            "Level 2": {
+              "lethalityUp_percent": 10
+            },
+            "Level 3": {
+              "lethalityUp_percent": 15
+            },
+            "Level 4": {
+              "lethalityUp_percent": 20
+            },
+            "Level 5": {
+              "lethalityUp_percent": 25
+            }
+          }
+        }
+      ],
+      "widget": {
+        "stats": {
+          "cavalryLethality_percent": {
+            "Level 1": 10,
+            "Level 2": 20,
+            "Level 3": 30,
+            "Level 4": 40,
+            "Level 5": 50
+          },
+          "cavalryHealth_percent": {
+            "Level 1": 10,
+            "Level 2": 20,
+            "Level 3": 30,
+            "Level 4": 40,
+            "Level 5": 50
+          }
+        },
+        "exclusiveSkills": [
+          {
+            "name": "Crimson Spirit",
+            "levels": {
+              "⚔️ Lv.1": {
+                "damageDealtUp_percent": 10
+              },
+              "⚔️ Lv.2": {
+                "damageDealtUp_percent": 15
+              },
+              "⚔️ Lv.3": {
+                "damageDealtUp_percent": 20
+              },
+              "⚔️ Lv.4": {
+                "damageDealtUp_percent": 25
+              },
+              "⚔️ Lv.5": {
+                "damageDealtUp_percent": 30
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Divine Strength",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderLethalityUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderLethalityUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderLethalityUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderLethalityUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderLethalityUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Helga",
+      "troopType": "Infantry",
+      "skills": [
+        {
+          "name": "Oath of Guardian",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 8
+            },
+            "Level 2": {
+              "procChance_percent": 16
+            },
+            "Level 3": {
+              "procChance_percent": 24
+            },
+            "Level 4": {
+              "procChance_percent": 32
+            },
+            "Level 5": {
+              "procChance_percent": 40
+            }
+          }
+        },
+        {
+          "name": "Echoes of Valhalla",
+          "levels": {
+            "Level 1": {
+              "attackUp_percent": 5
+            },
+            "Level 2": {
+              "attackUp_percent": 10
+            },
+            "Level 3": {
+              "attackUp_percent": 15
+            },
+            "Level 4": {
+              "attackUp_percent": 20
+            },
+            "Level 5": {
+              "attackUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Nature's Balance",
+          "levels": {
+            "Level 1": {
+              "lethalityUp_percent": 5
+            },
+            "Level 2": {
+              "lethalityUp_percent": 10
+            },
+            "Level 3": {
+              "lethalityUp_percent": 15
+            },
+            "Level 4": {
+              "lethalityUp_percent": 20
+            },
+            "Level 5": {
+              "lethalityUp_percent": 25
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Valiant Fury",
+            "levels": {
+              "⚔️ Lv.1": {
+                "damageDealtUp_percent": 10
+              },
+              "⚔️ Lv.2": {
+                "damageDealtUp_percent": 15
+              },
+              "⚔️ Lv.3": {
+                "damageDealtUp_percent": 20
+              },
+              "⚔️ Lv.4": {
+                "damageDealtUp_percent": 25
+              },
+              "⚔️ Lv.5": {
+                "damageDealtUp_percent": 30
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Zeal",
+            "levels": {
+              "⚔️ Lv.1": {
+                "rallyLethalityUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "rallyLethalityUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "rallyLethalityUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "rallyLethalityUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "rallyLethalityUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Saul",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "Taskforce Training",
+          "levels": {
+            "Level 1": {
+              "defenseUp_percent": 2,
+              "healthUp_percent": 3
+            },
+            "Level 2": {
+              "defenseUp_percent": 4,
+              "healthUp_percent": 6
+            },
+            "Level 3": {
+              "defenseUp_percent": 6,
+              "healthUp_percent": 9
+            },
+            "Level 4": {
+              "defenseUp_percent": 8,
+              "healthUp_percent": 12
+            },
+            "Level 5": {
+              "defenseUp_percent": 10,
+              "healthUp_percent": 15
+            }
+          }
+        },
+        {
+          "name": "Resourceful",
+          "levels": {
+            "Level 1": {
+              "constructionSpeedUp_percent": 3,
+              "constructionCostDown_percent": 3
+            },
+            "Level 2": {
+              "constructionSpeedUp_percent": 6,
+              "constructionCostDown_percent": 6
+            },
+            "Level 3": {
+              "constructionSpeedUp_percent": 9,
+              "constructionCostDown_percent": 9
+            },
+            "Level 4": {
+              "constructionSpeedUp_percent": 12,
+              "constructionCostDown_percent": 12
+            },
+            "Level 5": {
+              "constructionSpeedUp_percent": 15,
+              "constructionCostDown_percent": 15
+            }
+          }
+        },
+        {
+          "name": "Positional Battler",
+          "levels": {
+            "Level 1": {
+              "lethalityUp_percent": 5
+            },
+            "Level 2": {
+              "lethalityUp_percent": 10
+            },
+            "Level 3": {
+              "lethalityUp_percent": 15
+            },
+            "Level 4": {
+              "lethalityUp_percent": 20
+            },
+            "Level 5": {
+              "lethalityUp_percent": 25
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Fearless Advance",
+            "levels": {
+              "⚔️ Lv.1": {
+                "attackUp_percent": 6
+              },
+              "⚔️ Lv.2": {
+                "attackUp_percent": 12
+              },
+              "⚔️ Lv.3": {
+                "attackUp_percent": 16
+              },
+              "⚔️ Lv.4": {
+                "attackUp_percent": 20
+              },
+              "⚔️ Lv.5": {
+                "attackUp_percent": 24
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Defend to Attack",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderAttackUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderAttackUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderAttackUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderAttackUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderAttackUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Hilde",
+      "troopType": "Cavalry",
+      "skills": [
+        {
+          "name": "Noble Path",
+          "levels": {
+            "Level 1": {
+              "attackUp_percent": 3,
+              "defenseUp_percent": 2.0
+            },
+            "Level 2": {
+              "attackUp_percent": 6,
+              "defenseUp_percent": 4.0
+            },
+            "Level 3": {
+              "attackUp_percent": 9,
+              "defenseUp_percent": 6.0
+            },
+            "Level 4": {
+              "attackUp_percent": 12,
+              "defenseUp_percent": 8.0
+            },
+            "Level 5": {
+              "attackUp_percent": 15,
+              "defenseUp_percent": 10.0
+            }
+          }
+        },
+        {
+          "name": "Elixir of Strength",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 120
+            },
+            "Level 2": {
+              "procChance_percent": 140
+            },
+            "Level 3": {
+              "procChance_percent": 160
+            },
+            "Level 4": {
+              "procChance_percent": 180
+            },
+            "Level 5": {
+              "procChance_percent": 200
+            }
+          }
+        },
+        {
+          "name": "Trial by Fire",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 8
+            },
+            "Level 2": {
+              "procChance_percent": 16
+            },
+            "Level 3": {
+              "procChance_percent": 24
+            },
+            "Level 4": {
+              "procChance_percent": 32
+            },
+            "Level 5": {
+              "procChance_percent": 40
+            }
+          }
+        }
+      ],
+      "widget": {
+        "stats": {
+          "cavalryLethality_percent": {
+            "Level 1": 12,
+            "Level 2": 24,
+            "Level 3": 36,
+            "Level 4": 48,
+            "Level 5": 60
+          },
+          "cavalryHealth_percent": {
+            "Level 1": 12,
+            "Level 2": 24,
+            "Level 3": 36,
+            "Level 4": 48,
+            "Level 5": 60
+          }
+        },
+        "exclusiveSkills": [
+          {
+            "name": "Holy Invocation",
+            "levels": {
+              "⚔️ Lv.1": {
+                "healingUp_percent": 30
+              },
+              "⚔️ Lv.2": {
+                "healingUp_percent": 40
+              },
+              "⚔️ Lv.3": {
+                "healingUp_percent": 50
+              },
+              "⚔️ Lv.4": {
+                "healingUp_percent": 60
+              },
+              "⚔️ Lv.5": {
+                "healingUp_percent": 70
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Fortitude",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderHealthUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderHealthUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderHealthUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderHealthUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderHealthUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Zoe",
+      "troopType": "Infantry",
+      "skills": [
+        {
+          "name": "Sundering Wound",
+          "levels": {
+            "Level 1": {
+              "damagePerTurn_percent": 8
+            },
+            "Level 2": {
+              "damagePerTurn_percent": 16
+            },
+            "Level 3": {
+              "damagePerTurn_percent": 24
+            },
+            "Level 4": {
+              "damagePerTurn_percent": 32
+            },
+            "Level 5": {
+              "damagePerTurn_percent": 40
+            }
+          }
+        },
+        {
+          "name": "Stoic",
+          "levels": {
+            "Level 1": {
+              "attackUp_percent": 5
+            },
+            "Level 2": {
+              "attackUp_percent": 10
+            },
+            "Level 3": {
+              "attackUp_percent": 15
+            },
+            "Level 4": {
+              "attackUp_percent": 20
+            },
+            "Level 5": {
+              "attackUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Infinite Arsenal",
+          "levels": {
+            "Level 1": {
+              "targetDamageTakenUp_percent": 10
+            },
+            "Level 2": {
+              "targetDamageTakenUp_percent": 20
+            },
+            "Level 3": {
+              "targetDamageTakenUp_percent": 30
+            },
+            "Level 4": {
+              "targetDamageTakenUp_percent": 40
+            },
+            "Level 5": {
+              "targetDamageTakenUp_percent": 50
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Death Or Glory",
+            "levels": {
+              "⚔️ Lv.1": {
+                "attackUp_percent": 8
+              },
+              "⚔️ Lv.2": {
+                "attackUp_percent": 12
+              },
+              "⚔️ Lv.3": {
+                "attackUp_percent": 16
+              },
+              "⚔️ Lv.4": {
+                "attackUp_percent": 20
+              },
+              "⚔️ Lv.5": {
+                "attackUp_percent": 24
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Dark Lady",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderAttackUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderAttackUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderAttackUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderAttackUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderAttackUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Marlin",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "Wild Card",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 8
+            },
+            "Level 2": {
+              "procChance_percent": 16
+            },
+            "Level 3": {
+              "procChance_percent": 24
+            },
+            "Level 4": {
+              "procChance_percent": 32
+            },
+            "Level 5": {
+              "procChance_percent": 40
+            }
+          }
+        },
+        {
+          "name": "Rumhead",
+          "levels": {
+            "Level 1": {
+              "enemyLethalityDown_percent": 10
+            },
+            "Level 2": {
+              "enemyLethalityDown_percent": 20
+            },
+            "Level 3": {
+              "enemyLethalityDown_percent": 30
+            },
+            "Level 4": {
+              "enemyLethalityDown_percent": 40
+            },
+            "Level 5": {
+              "enemyLethalityDown_percent": 50
+            }
+          }
+        },
+        {
+          "name": "Dynamo",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 10
+            },
+            "Level 2": {
+              "procChance_percent": 20
+            },
+            "Level 3": {
+              "procChance_percent": 30
+            },
+            "Level 4": {
+              "procChance_percent": 40
+            },
+            "Level 5": {
+              "procChance_percent": 50
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Servant of Wine",
+            "levels": {
+              "⚔️ Lv.1": {
+                "healOnBasic_attackPercent": 5
+              },
+              "⚔️ Lv.2": {
+                "healOnBasic_attackPercent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "healOnBasic_attackPercent": 10
+              },
+              "⚔️ Lv.4": {
+                "healOnBasic_attackPercent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "healOnBasic_attackPercent": 15
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Admiral of the Line",
+            "levels": {
+              "⚔️ Lv.1": {
+                "rallyLethalityUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "rallyLethalityUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "rallyLethalityUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "rallyLethalityUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "rallyLethalityUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Petra",
+      "troopType": "Cavalry",
+      "skills": [
+        {
+          "name": "Evil Eye",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 10
+            },
+            "Level 2": {
+              "procChance_percent": 20
+            },
+            "Level 3": {
+              "procChance_percent": 30
+            },
+            "Level 4": {
+              "procChance_percent": 40
+            },
+            "Level 5": {
+              "procChance_percent": 50
+            }
+          }
+        },
+        {
+          "name": "The Favor",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 10
+            },
+            "Level 2": {
+              "procChance_percent": 20
+            },
+            "Level 3": {
+              "procChance_percent": 30
+            },
+            "Level 4": {
+              "procChance_percent": 40
+            },
+            "Level 5": {
+              "procChance_percent": 50
+            }
+          }
+        },
+        {
+          "name": "The Shield",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 10
+            },
+            "Level 2": {
+              "procChance_percent": 20
+            },
+            "Level 3": {
+              "procChance_percent": 30
+            },
+            "Level 4": {
+              "procChance_percent": 40
+            },
+            "Level 5": {
+              "procChance_percent": 50
+            }
+          }
+        }
+      ],
+      "widget": {
+        "stats": {
+          "cavalryLethality_percent": {
+            "Level 1": 14,
+            "Level 2": 28,
+            "Level 3": 42,
+            "Level 4": 56,
+            "Level 5": 70
+          },
+          "cavalryHealth_percent": {
+            "Level 1": 14,
+            "Level 2": 28,
+            "Level 3": 42,
+            "Level 4": 56,
+            "Level 5": 70
+          }
+        },
+        "exclusiveSkills": [
+          {
+            "name": "Weighted Deck",
+            "levels": {
+              "⚔️ Lv.1": {
+                "fluctuationSpreadUp_percent": 30
+              },
+              "⚔️ Lv.2": {
+                "fluctuationSpreadUp_percent": 60
+              },
+              "⚔️ Lv.3": {
+                "fluctuationSpreadUp_percent": 90
+              },
+              "⚔️ Lv.4": {
+                "fluctuationSpreadUp_percent": 120
+              },
+              "⚔️ Lv.5": {
+                "fluctuationSpreadUp_percent": 150
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Cosmic Eye",
+            "levels": {
+              "⚔️ Lv.1": {
+                "rallyAttackUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "rallyAttackUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "rallyAttackUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "rallyAttackUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "rallyAttackUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Eric",
+      "troopType": "Infantry",
+      "skills": [
+        {
+          "name": "Holy Warrior",
+          "levels": {
+            "Level 1": {
+              "enemyAttackDown_percent": 4
+            },
+            "Level 2": {
+              "enemyAttackDown_percent": 8
+            },
+            "Level 3": {
+              "enemyAttackDown_percent": 12
+            },
+            "Level 4": {
+              "enemyAttackDown_percent": 16
+            },
+            "Level 5": {
+              "enemyAttackDown_percent": 20
+            }
+          }
+        },
+        {
+          "name": "Conviction",
+          "levels": {
+            "Level 1": {
+              "damageTakenDown_percent": 4
+            },
+            "Level 2": {
+              "damageTakenDown_percent": 8
+            },
+            "Level 3": {
+              "damageTakenDown_percent": 12
+            },
+            "Level 4": {
+              "damageTakenDown_percent": 16
+            },
+            "Level 5": {
+              "damageTakenDown_percent": 20
+            }
+          }
+        },
+        {
+          "name": "Exhortation",
+          "levels": {
+            "Level 1": {
+              "healthUp_percent": 5
+            },
+            "Level 2": {
+              "healthUp_percent": 10
+            },
+            "Level 3": {
+              "healthUp_percent": 15
+            },
+            "Level 4": {
+              "healthUp_percent": 20
+            },
+            "Level 5": {
+              "healthUp_percent": 25
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Blessed Hammer",
+            "levels": {
+              "⚔️ Lv.1": {
+                "damageDealtUp_percent": 10
+              },
+              "⚔️ Lv.2": {
+                "damageDealtUp_percent": 15
+              },
+              "⚔️ Lv.3": {
+                "damageDealtUp_percent": 20
+              },
+              "⚔️ Lv.4": {
+                "damageDealtUp_percent": 25
+              },
+              "⚔️ Lv.5": {
+                "damageDealtUp_percent": 30
+              }
+            },
+            "type": "conquest"
+          },
+          {
+            "name": "Vanguard",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderDefenseUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderDefenseUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderDefenseUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderDefenseUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderDefenseUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Jaeger",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "The Tempest",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 8
+            },
+            "Level 2": {
+              "procChance_percent": 16
+            },
+            "Level 3": {
+              "procChance_percent": 24
+            },
+            "Level 4": {
+              "procChance_percent": 32
+            },
+            "Level 5": {
+              "procChance_percent": 40
+            }
+          }
+        },
+        {
+          "name": "The Resistance",
+          "levels": {
+            "Level 1": {
+              "enemyLethalityDown_percent": 10
+            },
+            "Level 2": {
+              "enemyLethalityDown_percent": 20
+            },
+            "Level 3": {
+              "enemyLethalityDown_percent": 30
+            },
+            "Level 4": {
+              "enemyLethalityDown_percent": 40
+            },
+            "Level 5": {
+              "enemyLethalityDown_percent": 50
+            }
+          }
+        },
+        {
+          "name": "The Celebration",
+          "levels": {
+            "Level 1": {
+              "healthUp_percent": 5
+            },
+            "Level 2": {
+              "healthUp_percent": 10
+            },
+            "Level 3": {
+              "healthUp_percent": 15
+            },
+            "Level 4": {
+              "healthUp_percent": 20
+            },
+            "Level 5": {
+              "healthUp_percent": 25
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Hymn to Survival",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderHealthUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderHealthUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderHealthUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderHealthUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderHealthUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Rosa",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "Chaos Gambit",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 10
+            },
+            "Level 2": {
+              "procChance_percent": 20
+            },
+            "Level 3": {
+              "procChance_percent": 30
+            },
+            "Level 4": {
+              "procChance_percent": 40
+            },
+            "Level 5": {
+              "procChance_percent": 50
+            }
+          }
+        },
+        {
+          "name": "Rose of War",
+          "levels": {
+            "Level 1": {
+              "enemyDamageDown_percent": 4
+            },
+            "Level 2": {
+              "enemyDamageDown_percent": 8
+            },
+            "Level 3": {
+              "enemyDamageDown_percent": 12
+            },
+            "Level 4": {
+              "enemyDamageDown_percent": 16
+            },
+            "Level 5": {
+              "enemyDamageDown_percent": 20
+            }
+          }
+        },
+        {
+          "name": "Golden Rhythm",
+          "levels": {
+            "Level 1": {
+              "archerAttack_percent": 6
+            },
+            "Level 2": {
+              "archerAttack_percent": 12
+            },
+            "Level 3": {
+              "archerAttack_percent": 18
+            },
+            "Level 4": {
+              "archerAttack_percent": 24
+            },
+            "Level 5": {
+              "archerAttack_percent": 30
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Perihelion",
+            "levels": {
+              "⚔️ Lv.1": {
+                "rallyLethalityUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "rallyLethalityUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "rallyLethalityUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "rallyLethalityUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "rallyLethalityUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Alcar",
+      "troopType": "Infantry",
+      "skills": [
+        {
+          "name": "Rescuing Hands",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 14
+            },
+            "Level 2": {
+              "procChance_percent": 28
+            },
+            "Level 3": {
+              "procChance_percent": 42
+            },
+            "Level 4": {
+              "procChance_percent": 56
+            },
+            "Level 5": {
+              "procChance_percent": 70
+            }
+          }
+        },
+        {
+          "name": "Praetorian Will",
+          "levels": {
+            "Level 1": {
+              "infantryDamageUp_percent": 20
+            },
+            "Level 2": {
+              "infantryDamageUp_percent": 40
+            },
+            "Level 3": {
+              "infantryDamageUp_percent": 60
+            },
+            "Level 4": {
+              "infantryDamageUp_percent": 80
+            },
+            "Level 5": {
+              "infantryDamageUp_percent": 100
+            }
+          }
+        },
+        {
+          "name": "Carpe Diem",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 12
+            },
+            "Level 2": {
+              "procChance_percent": 24
+            },
+            "Level 3": {
+              "procChance_percent": 36
+            },
+            "Level 4": {
+              "procChance_percent": 48
+            },
+            "Level 5": {
+              "procChance_percent": 60
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Vow of Honor",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderHealthUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderHealthUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderHealthUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderHealthUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderHealthUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Margot",
+      "troopType": "Cavalry",
+      "skills": [
+        {
+          "name": "Warbringer",
+          "levels": {
+            "Level 1": {
+              "attackUp_percent": 5
+            },
+            "Level 2": {
+              "attackUp_percent": 10
+            },
+            "Level 3": {
+              "attackUp_percent": 15
+            },
+            "Level 4": {
+              "attackUp_percent": 20
+            },
+            "Level 5": {
+              "attackUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Subterfuge",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 4
+            },
+            "Level 2": {
+              "procChance_percent": 8
+            },
+            "Level 3": {
+              "procChance_percent": 12
+            },
+            "Level 4": {
+              "procChance_percent": 16
+            },
+            "Level 5": {
+              "procChance_percent": 20
+            }
+          }
+        },
+        {
+          "name": "Sleight Hand",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 120
+            },
+            "Level 2": {
+              "procChance_percent": 140
+            },
+            "Level 3": {
+              "procChance_percent": 160
+            },
+            "Level 4": {
+              "procChance_percent": 180
+            },
+            "Level 5": {
+              "procChance_percent": 200
+            }
+          }
+        }
+      ],
+      "widget": {
+        "stats": {
+          "cavalryLethality_percent": {
+            "Level 1": 18.5,
+            "Level 2": 37,
+            "Level 3": 55.5,
+            "Level 4": 74,
+            "Level 5": 92.5
+          },
+          "cavalryHealth_percent": {
+            "Level 1": 18.5,
+            "Level 2": 37,
+            "Level 3": 55.5,
+            "Level 4": 74,
+            "Level 5": 92.5
+          }
+        },
+        "exclusiveSkills": [
+          {
+            "name": "Pugilist",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderLethalityUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderLethalityUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderLethalityUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderLethalityUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderLethalityUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vivian",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "Crouching Tiger",
+          "levels": {
+            "Level 1": {
+              "targetDamageTakenUp_percent": 5
+            },
+            "Level 2": {
+              "targetDamageTakenUp_percent": 10
+            },
+            "Level 3": {
+              "targetDamageTakenUp_percent": 15
+            },
+            "Level 4": {
+              "targetDamageTakenUp_percent": 20
+            },
+            "Level 5": {
+              "targetDamageTakenUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Focus Fire",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 20,
+              "targetDamageTakenUp_percent": 5
+            },
+            "Level 2": {
+              "procChance_percent": 40,
+              "targetDamageTakenUp_percent": 7.5
+            },
+            "Level 3": {
+              "procChance_percent": 60,
+              "targetDamageTakenUp_percent": 10
+            },
+            "Level 4": {
+              "procChance_percent": 80,
+              "targetDamageTakenUp_percent": 12.5
+            },
+            "Level 5": {
+              "procChance_percent": 100,
+              "targetDamageTakenUp_percent": 15
+            }
+          }
+        },
+        {
+          "name": "Trap of Greed",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 12
+            },
+            "Level 2": {
+              "procChance_percent": 24
+            },
+            "Level 3": {
+              "procChance_percent": 36
+            },
+            "Level 4": {
+              "procChance_percent": 48
+            },
+            "Level 5": {
+              "procChance_percent": 60
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Money Driven",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderDefenseUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderDefenseUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderDefenseUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderDefenseUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderDefenseUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Long Fei",
+      "troopType": "Infantry",
+      "skills": [
+        {
+          "name": "Mighty Paragon",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 10
+            },
+            "Level 2": {
+              "procChance_percent": 20
+            },
+            "Level 3": {
+              "procChance_percent": 30
+            },
+            "Level 4": {
+              "procChance_percent": 40
+            },
+            "Level 5": {
+              "procChance_percent": 50
+            }
+          }
+        },
+        {
+          "name": "Celestial Sustenance",
+          "levels": {
+            "Level 1": {
+              "defenseUp_percent": 5
+            },
+            "Level 2": {
+              "defenseUp_percent": 10
+            },
+            "Level 3": {
+              "defenseUp_percent": 15
+            },
+            "Level 4": {
+              "defenseUp_percent": 20
+            },
+            "Level 5": {
+              "defenseUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Art of War",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 120
+            },
+            "Level 2": {
+              "procChance_percent": 140
+            },
+            "Level 3": {
+              "procChance_percent": 160
+            },
+            "Level 4": {
+              "procChance_percent": 180
+            },
+            "Level 5": {
+              "procChance_percent": 200
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Strategic Strike",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderAttackUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderAttackUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderAttackUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderAttackUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderAttackUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Thrud",
+      "troopType": "Cavalry",
+      "skills": [
+        {
+          "name": "Battle Hunger",
+          "levels": {
+            "Level 1": {
+              "damageTakenDown_percent": 3,
+              "damageDealtUp_percent": 3
+            },
+            "Level 2": {
+              "damageTakenDown_percent": 6,
+              "damageDealtUp_percent": 6
+            },
+            "Level 3": {
+              "damageTakenDown_percent": 9,
+              "damageDealtUp_percent": 9
+            },
+            "Level 4": {
+              "damageTakenDown_percent": 12,
+              "damageDealtUp_percent": 12
+            },
+            "Level 5": {
+              "damageTakenDown_percent": 15,
+              "damageDealtUp_percent": 15
+            }
+          }
+        },
+        {
+          "name": "Reckless Charge",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 20
+            },
+            "Level 2": {
+              "procChance_percent": 40
+            },
+            "Level 3": {
+              "procChance_percent": 60
+            },
+            "Level 4": {
+              "procChance_percent": 80
+            },
+            "Level 5": {
+              "procChance_percent": 100
+            }
+          }
+        },
+        {
+          "name": "Ancestral Guidance",
+          "levels": {
+            "Level 1": {
+              "damageDealtUp_percent": 5,
+              "damageTakenDown_percent": 5
+            },
+            "Level 2": {
+              "damageDealtUp_percent": 10,
+              "damageTakenDown_percent": 10
+            },
+            "Level 3": {
+              "damageDealtUp_percent": 15,
+              "damageTakenDown_percent": 15
+            },
+            "Level 4": {
+              "damageDealtUp_percent": 20,
+              "damageTakenDown_percent": 20
+            },
+            "Level 5": {
+              "damageDealtUp_percent": 25,
+              "damageTakenDown_percent": 25
+            }
+          }
+        }
+      ],
+      "widget": {
+        "stats": {
+          "cavalryLethality_percent": {
+            "Level 1": 22.2,
+            "Level 2": 44.4,
+            "Level 3": 66.6,
+            "Level 4": 88.8,
+            "Level 5": 111
+          },
+          "cavalryHealth_percent": {
+            "Level 1": 22.2,
+            "Level 2": 44.4,
+            "Level 3": 66.6,
+            "Level 4": 88.8,
+            "Level 5": 111
+          }
+        },
+        "exclusiveSkills": [
+          {
+            "name": "Wolf-Kissed",
+            "levels": {
+              "⚔️ Lv.1": {
+                "rallyLethalityUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "rallyLethalityUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "rallyLethalityUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "rallyLethalityUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "rallyLethalityUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Yang",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "Avalanche",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 20
+            },
+            "Level 2": {
+              "procChance_percent": 40
+            },
+            "Level 3": {
+              "procChance_percent": 60
+            },
+            "Level 4": {
+              "procChance_percent": 80
+            },
+            "Level 5": {
+              "procChance_percent": 100
+            }
+          }
+        },
+        {
+          "name": "Ice Zone",
+          "levels": {
+            "Level 1": {
+              "archerAttack_percent": 20
+            },
+            "Level 2": {
+              "archerAttack_percent": 40
+            },
+            "Level 3": {
+              "archerAttack_percent": 60
+            },
+            "Level 4": {
+              "archerAttack_percent": 80
+            },
+            "Level 5": {
+              "archerAttack_percent": 100
+            }
+          }
+        },
+        {
+          "name": "Ambush",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 8
+            },
+            "Level 2": {
+              "procChance_percent": 16
+            },
+            "Level 3": {
+              "procChance_percent": 24
+            },
+            "Level 4": {
+              "procChance_percent": 32
+            },
+            "Level 5": {
+              "procChance_percent": 40
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Offensive Defense",
+            "levels": {
+              "⚔️ Lv.1": {
+                "rallyLethalityUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "rallyLethalityUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "rallyLethalityUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "rallyLethalityUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "rallyLethalityUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Triton",
+      "troopType": "Infantry",
+      "skills": [
+        {
+          "name": "Command of Power",
+          "levels": {
+            "Level 1": {
+              "defenseUp_percent": 5
+            },
+            "Level 2": {
+              "defenseUp_percent": 10
+            },
+            "Level 3": {
+              "defenseUp_percent": 15
+            },
+            "Level 4": {
+              "defenseUp_percent": 20
+            },
+            "Level 5": {
+              "defenseUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Warfare of Power",
+          "levels": {
+            "Level 1": {
+              "damageDealtUp_percent": 6
+            },
+            "Level 2": {
+              "damageDealtUp_percent": 12
+            },
+            "Level 3": {
+              "damageDealtUp_percent": 18
+            },
+            "Level 4": {
+              "damageDealtUp_percent": 24
+            },
+            "Level 5": {
+              "damageDealtUp_percent": 30
+            }
+          }
+        },
+        {
+          "name": "Oath of Power",
+          "levels": {
+            "Level 1": {
+              "healthUp_percent": 4
+            },
+            "Level 2": {
+              "healthUp_percent": 8
+            },
+            "Level 3": {
+              "healthUp_percent": 12
+            },
+            "Level 4": {
+              "healthUp_percent": 16
+            },
+            "Level 5": {
+              "healthUp_percent": 20
+            }
+          }
+        }
+      ],
+      "widget": {
+        "exclusiveSkills": [
+          {
+            "name": "Whale Call",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderDefenseUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderDefenseUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderDefenseUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderDefenseUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderDefenseUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Sophia",
+      "troopType": "Cavalry",
+      "skills": [
+        {
+          "name": "Arcane Pact",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 8
+            },
+            "Level 2": {
+              "procChance_percent": 16
+            },
+            "Level 3": {
+              "procChance_percent": 24
+            },
+            "Level 4": {
+              "procChance_percent": 32
+            },
+            "Level 5": {
+              "procChance_percent": 40
+            }
+          }
+        },
+        {
+          "name": "Terror - Deathblow",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 40
+            },
+            "Level 2": {
+              "procChance_percent": 80
+            },
+            "Level 3": {
+              "procChance_percent": 120
+            },
+            "Level 4": {
+              "procChance_percent": 160
+            },
+            "Level 5": {
+              "procChance_percent": 200
+            }
+          }
+        },
+        {
+          "name": "Terror - Annihilation",
+          "levels": {
+            "Level 1": {
+              "damageDealtUp_percent": 15
+            },
+            "Level 2": {
+              "damageDealtUp_percent": 30
+            },
+            "Level 3": {
+              "damageDealtUp_percent": 45
+            },
+            "Level 4": {
+              "damageDealtUp_percent": 60
+            },
+            "Level 5": {
+              "damageDealtUp_percent": 75
+            }
+          }
+        }
+      ],
+      "widget": {
+        "stats": {
+          "cavalryLethality_percent": {
+            "Level 1": 26.7,
+            "Level 2": 53.4,
+            "Level 3": 80.1,
+            "Level 4": 106.8,
+            "Level 5": 133.5
+          },
+          "cavalryHealth_percent": {
+            "Level 1": 26.7,
+            "Level 2": 53.4,
+            "Level 3": 80.1,
+            "Level 4": 106.8,
+            "Level 5": 133.5
+          }
+        },
+        "exclusiveSkills": [
+          {
+            "name": "Queen of Night",
+            "levels": {
+              "⚔️ Lv.1": {
+                "defenderLethalityUp_percent": 5
+              },
+              "⚔️ Lv.2": {
+                "defenderLethalityUp_percent": 7.5
+              },
+              "⚔️ Lv.3": {
+                "defenderLethalityUp_percent": 10
+              },
+              "⚔️ Lv.4": {
+                "defenderLethalityUp_percent": 12.5
+              },
+              "⚔️ Lv.5": {
+                "defenderLethalityUp_percent": 15
+              }
+            },
+            "type": "expedition"
+          }
+        ]
+      }
+    }
+  ],
+  "joiners": [
+    {
+      "name": "Chenko",
+      "troopType": "Cavalry",
+      "skills": [
+        {
+          "name": "Stand of Arms",
+          "levels": {
+            "Level 1": {
+              "lethalityUp_percent": 5
+            },
+            "Level 2": {
+              "lethalityUp_percent": 10
+            },
+            "Level 3": {
+              "lethalityUp_percent": 15
+            },
+            "Level 4": {
+              "lethalityUp_percent": 20
+            },
+            "Level 5": {
+              "lethalityUp_percent": 25
+            }
+          }
+        },
+        {
+          "name": "Shield Wall",
+          "levels": {
+            "Level 1": {
+              "damageTakenDown_percent": 4
+            },
+            "Level 2": {
+              "damageTakenDown_percent": 8
+            },
+            "Level 3": {
+              "damageTakenDown_percent": 12
+            },
+            "Level 4": {
+              "damageTakenDown_percent": 16
+            },
+            "Level 5": {
+              "damageTakenDown_percent": 20
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Yeonwoo",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "On Guard",
+          "levels": {
+            "Level 1": {
+              "lethalityUp_percent": 5
+            },
+            "Level 2": {
+              "lethalityUp_percent": 10
+            },
+            "Level 3": {
+              "lethalityUp_percent": 15
+            },
+            "Level 4": {
+              "lethalityUp_percent": 20
+            },
+            "Level 5": {
+              "lethalityUp_percent": 25
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Amane",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "Tri-Phalanx",
+          "levels": {
+            "Level 1": {
+              "attackUp_percent": 5
+            },
+            "Level 2": {
+              "attackUp_percent": 10
+            },
+            "Level 3": {
+              "attackUp_percent": 15
+            },
+            "Level 4": {
+              "attackUp_percent": 20
+            },
+            "Level 5": {
+              "attackUp_percent": 25
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Howard",
+      "troopType": "Infantry",
+      "skills": [
+        {
+          "name": "Defenders' Edge",
+          "levels": {
+            "Level 1": {
+              "damageTakenDown_percent": 4
+            },
+            "Level 2": {
+              "damageTakenDown_percent": 8
+            },
+            "Level 3": {
+              "damageTakenDown_percent": 12
+            },
+            "Level 4": {
+              "damageTakenDown_percent": 16
+            },
+            "Level 5": {
+              "damageTakenDown_percent": 20
+            }
+          }
+        },
+        {
+          "name": "Weaken",
+          "levels": {
+            "Level 1": {
+              "enemyAttackDown_percent": 4
+            },
+            "Level 2": {
+              "enemyAttackDown_percent": 8
+            },
+            "Level 3": {
+              "enemyAttackDown_percent": 12
+            },
+            "Level 4": {
+              "enemyAttackDown_percent": 16
+            },
+            "Level 5": {
+              "enemyAttackDown_percent": 20
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Diana",
+      "troopType": "Archer",
+      "skills": []
+    },
+    {
+      "name": "Quinn",
+      "troopType": "Archer",
+      "skills": [
+        {
+          "name": "Sixth Sense",
+          "levels": {
+            "Level 1": {
+              "damageTakenDown_percent": 4
+            },
+            "Level 2": {
+              "damageTakenDown_percent": 8
+            },
+            "Level 3": {
+              "damageTakenDown_percent": 12
+            },
+            "Level 4": {
+              "damageTakenDown_percent": 16
+            },
+            "Level 5": {
+              "damageTakenDown_percent": 20
+            }
+          }
+        },
+        {
+          "name": "Precision Shot",
+          "levels": {
+            "Level 1": {
+              "procChance_percent": 10
+            },
+            "Level 2": {
+              "procChance_percent": 20
+            },
+            "Level 3": {
+              "procChance_percent": 30
+            },
+            "Level 4": {
+              "procChance_percent": 40
+            },
+            "Level 5": {
+              "procChance_percent": 50
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
