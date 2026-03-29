@@ -248,7 +248,7 @@
 
     if (killRate >= 0.95) {
       // Very close to winning (>95%) — keep infantry, shift 2pp cav→arc
-      fi = fi + 0.00;
+      fi = fi + 0.02;
       fc = Math.max(0.015, fc - 0.015);
       shift = Math.min(shift, 0.02);
     } else if (killRate >= 0.90) {
