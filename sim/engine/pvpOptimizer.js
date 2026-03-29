@@ -253,7 +253,7 @@
       shift = Math.min(shift, 0.02);
     } else if (killRate >= 0.90) {
       // Almost won (90-95%) — bump infantry slightly (+3pp), shift 2pp cav→arc
-      fi = fi + 0.05;
+      fi = fi + 0.04;
       fc = Math.max(0.025, fc - 0.025);
       shift = Math.min(shift, 0.025);
     } else if (killRate >= 0.75 && improving) {
