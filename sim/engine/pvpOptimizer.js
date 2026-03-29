@@ -131,18 +131,23 @@
 
     // Set formation targets based on defender composition
     let targetInf = 0.50, targetCav = 0.18, balWeight = 0.0;
-    if (isBalancedDef) {
-      targetInf = 0.50; targetCav = 0.18; balWeight = 0.45;
-    } else if (isNoArcDef) {
-      // Dynamic target: scale attacker inf based on defender inf ratio
-      // Def 70% inf → target 55% atk inf, Def 50% inf → target 50% atk inf
-      // Def 64% inf → target ~53% atk inf
-      const defInfPct = (defenderTroops.inf||0) / defTotal2;
-      targetInf = 0.50 + (defInfPct - 0.50) * 0.25; // slight increase with def inf
-      targetInf = Math.max(0.48, Math.min(0.56, targetInf)); // clamp 48-56%
-      targetCav = 0.03; balWeight = 0.55;
-    } else if (isNoCavDef) {
-      targetInf = 0.45; targetCav = 0.05; balWeight = 0.40;
+    if (isRecalibration) {
+      // During recalibration: light bias toward the current best formation
+      // This prevents raw simulation from always pushing infantry up
+      targetInf = opts.recalCenterFi || 0.50;
+      targetCav = opts.recalCenterFc || 0.18;
+      balWeight = 0.35;
+    } else {
+      if (isBalancedDef) {
+        targetInf = 0.50; targetCav = 0.18; balWeight = 0.45;
+      } else if (isNoArcDef) {
+        const defInfPct = (defenderTroops.inf||0) / defTotal2;
+        targetInf = 0.50 + (defInfPct - 0.50) * 0.25;
+        targetInf = Math.max(0.48, Math.min(0.56, targetInf));
+        targetCav = 0.03; balWeight = 0.55;
+      } else if (isNoCavDef) {
+        targetInf = 0.45; targetCav = 0.05; balWeight = 0.40;
+      }
     }
 
     if (balWeight > 0) {
@@ -208,51 +213,88 @@
    * @returns {{ shift, infMin, infMax, cavMin, cavMax, arcMin, verdict, direction, summary }}
    */
   function pvpRecalibrate(currentBest, attLosses, attTotal, defKilled, defTotal, history) {
-    const lossRate = attLosses / Math.max(1, attTotal);
     const killRate = defKilled / Math.max(1, defTotal);
 
-    const prev        = history.length > 0 ? history[history.length - 1] : null;
-    const prevLoss    = prev ? prev.attLosses / Math.max(1, prev.attTotal) : lossRate;
-    const prevKill    = prev ? prev.defKilled / Math.max(1, prev.defTotal) : killRate;
-    const killDelta   = killRate - prevKill;
-    const lossImprove = lossRate < prevLoss;
+    // Compare with previous attempt's kill rate
+    const prev = history.length > 0 ? history[history.length - 1] : null;
+    const prevKillVal = prev ? (prev.defKilled || prev.defKill || 0) : 0;
+    const prevDefTotal = prev ? (prev.defTotal || defTotal) : defTotal;
+    const prevKill = prev ? prevKillVal / Math.max(1, prevDefTotal) : killRate;
+    const killDelta = killRate - prevKill;
+    const improving = killDelta > 0.005; // more defender injured = improving
+    const worsening = killDelta < -0.005;
 
-    // ── Base shift by loss severity ───────────────────────────────
+    // ── Shift size based on how far from winning ──────────────────
     let shift;
-    if (lossRate > 0.60) {
-      shift = lossImprove ? 0.07 : 0.15;
-    } else if (lossRate > 0.30) {
-      shift = lossImprove ? 0.04 : 0.08;
+    if (killRate < 0.50) {
+      // Very far from winning — large shifts needed
+      shift = 0.10;
+    } else if (killRate < 0.75) {
+      // Getting closer — moderate shifts
+      shift = improving ? 0.05 : 0.08;
+    } else if (killRate < 0.90) {
+      // Close — smaller shifts
+      shift = improving ? 0.03 : 0.05;
     } else {
-      shift = lossImprove ? 0.01 : 0.03;
+      // Almost won (>90%) — fine-tuning
+      shift = improving ? 0.02 : 0.04;
     }
-
-    // ── Kill-rate amplifiers ──────────────────────────────────────
-    if (killDelta > 0.50) shift = Math.min(0.50, shift * 2.0);
-    else if (killDelta > 0.30) shift = Math.min(0.50, shift * 1.5);
-    if (Math.abs(killDelta) < 0.05 && lossRate < 0.50) shift = Math.max(0.01, shift * 0.5);
-
-    // Almost won (killed >90% of defender) → tiny fine-tuning only
-    if (killRate > 0.90) shift = Math.min(shift, 0.05);
 
     shift = Math.min(0.50, Math.max(0.01, parseFloat(shift.toFixed(3))));
 
-    // ── New search bounds centred on current best ─────────────────
-    const fi = currentBest.fi;
-    const fc = currentBest.fc;
-    const infMin = parseFloat(Math.max(0.15, fi - shift).toFixed(3));
-    const infMax = parseFloat(Math.min(0.85, fi + shift).toFixed(3));
+    // ── Directional center shift based on defender injured ─────────
+    let fi = currentBest.fi;
+    let fc = currentBest.fc;
+
+    if (killRate >= 0.95) {
+      // Very close to winning (>95%) — keep infantry, shift 2pp cav→arc
+      fc = Math.max(0.02, fc - 0.02);
+      shift = Math.min(shift, 0.03);
+    } else if (killRate >= 0.90) {
+      // Almost won (90-95%) — bump infantry slightly (+2.5pp), shift 2pp cav→arc
+      fi = fi + 0.025;
+      fc = Math.max(0.02, fc - 0.02);
+      shift = Math.min(shift, 0.03);
+    } else if (killRate >= 0.75 && improving) {
+      // Getting closer and improving — bump inf +2pp, shift 2pp cav→arc
+      fi = fi + 0.02;
+      fc = Math.max(0.02, fc - 0.02);
+      shift = Math.min(shift, 0.04);
+    } else if (killRate >= 0.75 && worsening) {
+      // Was close but worsened — troops dying, need more infantry (+2pp)
+      // Keep cavalry stable — don't shift it
+      fi = fi + 0.02;
+      shift = Math.min(shift, 0.04);
+    } else if (killRate >= 0.50 && worsening) {
+      // Moderate and worsening — need more tank (+3pp inf)
+      fi = fi + 0.03;
+      fc = Math.max(0.02, fc - 0.01);
+    } else if (killRate >= 0.50 && !improving) {
+      // Moderate stagnant — slight infantry increase
+      fi = fi + 0.02;
+    } else if (killRate < 0.50) {
+      // Far from winning — bigger shift toward more tank
+      fi = fi + 0.04;
+      fc = Math.max(0.02, fc - 0.01);
+    }
+
+    // Clamp infantry: 49% floor, 60% ceiling
+    fi = Math.max(0.49, Math.min(0.60, fi));
+
+    const infMin = parseFloat(Math.max(0.49, fi - shift).toFixed(3));
+    const infMax = parseFloat(Math.min(0.60, fi + shift).toFixed(3));
     const cavMin = parseFloat(Math.max(0.02, fc - shift / 2).toFixed(3));
-    const cavMax = parseFloat(Math.min(0.50, fc + shift / 2).toFixed(3));
+    const cavMax = parseFloat(Math.min(0.30, fc + shift / 2).toFixed(3));
     const arcMin = parseFloat(Math.max(0.10, 1 - infMax - cavMax).toFixed(3));
 
-    const verdict   = lossRate > 0.50 ? 'heavy' : lossRate > 0.20 ? 'moderate' : 'light';
-    const direction = lossImprove ? 'improving' : 'worsening';
+    const verdict = killRate > 0.90 ? 'almost won' : killRate > 0.75 ? 'close' : killRate > 0.50 ? 'moderate' : 'far';
+    const direction = improving ? 'improving' : worsening ? 'worsening' : 'stable';
 
     return {
       shift, infMin, infMax, cavMin, cavMax, arcMin,
-      verdict, direction, lossRate, killRate,
-      summary: `±${(shift*100).toFixed(0)}pp — ${verdict} losses (${(lossRate*100).toFixed(0)}%), ${direction}`
+      centerFi: fi, centerFc: fc,
+      verdict, direction, lossRate: 1.0, killRate,
+      summary: `Injured ${(killRate*100).toFixed(1)}% — ${verdict}, ${direction}`
     };
   }
 
